@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <title>Pacman</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -16,7 +17,13 @@
 		clearTimeout(timer);
 		timer = setTimeout(mouseStopped, 300);
 	});
+
+	window.addEventListener("click", function(){
+		clearTimeout(timer);
+		timer = setTimeout(mouseStopped, 300);
+	});
 	</script>
+	
 	<style>
 	body {
 		margin: 0px;
@@ -35,8 +42,8 @@
 </head>
 <body>
 <div class="video-container">
-    <video id="pacmanVideo" onmousemove="this.play();">
-    <source src="https://saradaher.github.io/pacman%20(360p).mp4" type="video/ogg"></source>
+    <video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();" onmousemove="this.play();">
+    <source src="./pacman%20(360p).mp4" type="video/mp4">
     </video>    
 </div>
 </body>	
