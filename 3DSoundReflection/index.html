@@ -30,6 +30,8 @@
             }
         }
     </style>
+    <!-- brain -->
+    <script src="https://unpkg.com/brain.js@2.0.0-beta.2/dist/brain-browser.min.js"></script>
 </head>
 
 <body style="font-size: 16px;">
@@ -50,8 +52,11 @@
         </div>
         <p>
             <input type="checkbox" id="hideBall" name="hideBall"><label for="hideBall">Hide Ball</label>
+            <label id="lblSoundClassification" style="font-weight: bold; font-size: large; margin-left:50%"></label>
+
             <label id="lblNote" style="font-weight: bolder; font-size: x-large; float: right;"></label>
         </p>
+
     </div>
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.120.0/build/three.module.js';
@@ -90,6 +95,25 @@
         //let lastUpdateTime = 0; // Define lastUpdateTime globally
         //const updateInterval = 1000; // Update interval in milliseconds
         let lastNote = '';
+        const net = new brain.NeuralNetwork();
+
+        // Train the neural network with simple patterns for music, noise, and speech
+        net.train([
+        // Example for Speech (low frequencies dominant)
+        { input: { lowFreq: 0.9, midFreq: 0.1, highFreq: 0.1 }, output: { speech: 1 } },
+
+        // Example for Music (balanced frequencies)
+        { input: { lowFreq: 0.3, midFreq: 0.4, highFreq: 0.3 }, output: { music: 1 } },
+
+        // Example for Noise (higher frequencies dominant)
+        { input: { lowFreq: 0.2, midFreq: 0.2, highFreq: 0.6 }, output: { noise: 1 } },
+
+        // Additional Music Example
+        { input: { lowFreq: 0.4, midFreq: 0.4, highFreq: 0.2 }, output: { music: 1 } },
+
+        // Additional Noise Example
+        { input: { lowFreq: 0.6, midFreq: 0.2, highFreq: 0.2 }, output: { noise: 1 } }
+        ]);
 
         // Initialize Three.js scene, camera, and renderer
         let scene = new THREE.Scene();
@@ -349,6 +373,56 @@
 
             if (dataArrayAmp) {
                 analyserAmp.getByteFrequencyData(dataArrayAmp);
+
+        const bufferLength = analyserAmp.frequencyBinCount;
+
+        // Calculate frequency bins dynamically
+        const sampleRate = analyserAmp.context.sampleRate; // E.g., 44100 Hz
+        const nyquist = sampleRate / 2; // Nyquist frequency
+        const binSize = nyquist / bufferLength; // Frequency per bin
+
+        // Define frequency range bins (simpler split)
+        const lowFreqEnd = Math.floor(300 / binSize); // Up to 300 Hz
+        const midFreqEnd = Math.floor(1000 / binSize); // Up to 1000 Hz
+        const highFreqStart = Math.floor(3000 / binSize); // Above 3000 Hz
+
+        let lowFreq = 0, midFreq = 0, highFreq = 0;
+
+        // Calculate low, mid, and high frequency sums
+        for (let i = 0; i < lowFreqEnd; i++) {
+        lowFreq += dataArrayAmp[i];
+        }
+
+        for (let i = lowFreqEnd; i < midFreqEnd; i++) {
+        midFreq += dataArrayAmp[i];
+        }
+
+        for (let i = highFreqStart; i < bufferLength; i++) {
+        highFreq += dataArrayAmp[i];
+        }
+
+        // Normalize the sums to ensure consistent input
+        lowFreq = lowFreq / (255 * lowFreqEnd);
+        midFreq = midFreq / (255 * (midFreqEnd - lowFreqEnd));
+        highFreq = highFreq / (255 * (bufferLength - highFreqStart));
+
+        const normalizedInput = { lowFreq, midFreq, highFreq };
+
+        console.log("Normalized Input:", normalizedInput);
+
+        // Run the classification using the trained network
+        const classification = net.run(normalizedInput);
+        console.log("Classification Scores:", classification);
+
+        // Find the most likely classification
+        const label = Object.keys(classification).reduce((a, b) =>
+        classification[a] > classification[b] ? a : b
+        );
+
+        // Update UI or 3D scene based on the classification
+        console.log('Classification Result: ' + label);
+        const lblSoundClassification = document.getElementById("lblSoundClassification");
+        lblSoundClassification.innerText = 'Classification Result: ' + label;
             }
 
             const averageFrequency = getAverageFrequency(dataArrayAmp);
@@ -435,6 +509,7 @@
                 lblAudioFile.hidden = false;
                 rays = [];
                 lblNote.innerText = '';
+        lblSoundClassification.innerText = '';
                 //lastUpdateTime = 0;
                 lastNote = '';
             }
