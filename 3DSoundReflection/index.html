@@ -52,9 +52,13 @@
             <button id="startButton" style="width: 100%;height: 50px;">Play</button>
         </div>
         <p>
+            <div class="checkbox-container" style="width:32%; display:inline-block;">
             <input type="checkbox" id="hideBall" name="hideBall"><label for="hideBall">Hide Ball</label>
-            <label id="lblSoundClassification" style="font-weight: bold; font-size: large; margin-left:50%"></label>
+            </div>
+            <div class="label-container" style="width:68%; display:inline;">
+                <label id="lblSoundClassification" style="font-weight: bold;"></label>
             <label id="lblNote" style="font-weight: bolder; font-size: x-large; float: right;"></label>
+            </div>
         </p>
 
     </div>
@@ -422,7 +426,7 @@
         // Update UI or 3D scene based on the classification
         console.log('Classification Result: ' + label);
         const lblSoundClassification = document.getElementById("lblSoundClassification");
-        lblSoundClassification.innerText = 'Classification Result: ' + label;
+        lblSoundClassification.innerText = 'Classification: ' + label;
             }
 
             const averageFrequency = getAverageFrequency(dataArrayAmp);
