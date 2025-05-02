@@ -30,7 +30,7 @@
             }
         }
     </style>
-    
+
     <!-- brain -->
     <script src="https://unpkg.com/brain.js@2.0.0-beta.2/dist/brain-browser.min.js"></script>
 </head>
@@ -44,7 +44,8 @@
             <source id="sourceAudio" type="audio/mpeg">
         </audio>
         <p>
-            <label id="lblAudioFile" for="audioFile" class="file">Or choose a local audio file
+            <label id="lblAudioFile" for="audioFile" class="file">
+                Or choose a local audio file
                 <input type="file" id="audioFile" accept="audio/*" />
             </label>
         </p>
@@ -52,13 +53,15 @@
             <button id="startButton" style="width: 100%;height: 50px;">Play</button>
         </div>
         <p>
-            <div class="checkbox-container" style="width:32%; display:inline-block;">
+        <div class="checkbox-container" style="width:32%; display:inline;">
             <input type="checkbox" id="hideBall" name="hideBall"><label for="hideBall">Hide Ball</label>
-            </div>
-            <div class="label-container" style="width:68%; display:inline;">
-                <label id="lblSoundClassification" style="font-weight: bold;"></label>
-            <label id="lblNote" style="font-weight: bolder; font-size: x-large; float: right;"></label>
-            </div>
+            <input type="checkbox" id="showFundementalFrequencyOnly" name="showFundementalFrequencyOnly"><label
+                for="showFundementalFrequencyOnly">Dominant Frequency</label>
+        </div>
+        <div class="label-container" style="width:68%; display:inline;">
+            <label id="lblSoundClassification" style="font-weight: bold;"></label>
+            <label id="lblNote" style="font-weight: bolder; font-size: x-large; float: right; "></label>
+        </div>
         </p>
 
     </div>
@@ -94,8 +97,9 @@
         let ball = new THREE.Mesh(icosahedronGeometry, lambertMaterial);
         let positionalAudio;
         let particleSystem; // Variable to hold the particle system
-        let rays = []; // Array to hold the rays  
+        let rays = []; // Array to hold the rays
         let isSoundPlaying = false;
+        let isShowFFOnly = false;
         //let lastUpdateTime = 0; // Define lastUpdateTime globally
         //const updateInterval = 1000; // Update interval in milliseconds
         let lastNote = '';
@@ -103,20 +107,20 @@
 
         // Train the neural network with simple patterns for music, noise, and speech
         net.train([
-        // Example for Speech (low frequencies dominant)
-        { input: { lowFreq: 0.9, midFreq: 0.1, highFreq: 0.1 }, output: { speech: 1 } },
+            // Example for Speech (low frequencies dominant)
+            { input: { lowFreq: 0.9, midFreq: 0.1, highFreq: 0.1 }, output: { speech: 1 } },
 
-        // Example for Music (balanced frequencies)
-        { input: { lowFreq: 0.3, midFreq: 0.4, highFreq: 0.3 }, output: { music: 1 } },
+            // Example for Music (balanced frequencies)
+            { input: { lowFreq: 0.3, midFreq: 0.4, highFreq: 0.3 }, output: { music: 1 } },
 
-        // Example for Noise (higher frequencies dominant)
-        { input: { lowFreq: 0.2, midFreq: 0.2, highFreq: 0.6 }, output: { noise: 1 } },
+            // Example for Noise (higher frequencies dominant)
+            { input: { lowFreq: 0.2, midFreq: 0.2, highFreq: 0.6 }, output: { noise: 1 } },
 
-        // Additional Music Example
-        { input: { lowFreq: 0.4, midFreq: 0.4, highFreq: 0.2 }, output: { music: 1 } },
+            // Additional Music Example
+            { input: { lowFreq: 0.4, midFreq: 0.4, highFreq: 0.2 }, output: { music: 1 } },
 
-        // Additional Noise Example
-        { input: { lowFreq: 0.6, midFreq: 0.2, highFreq: 0.2 }, output: { noise: 1 } }
+            // Additional Noise Example
+            { input: { lowFreq: 0.6, midFreq: 0.2, highFreq: 0.2 }, output: { noise: 1 } }
         ]);
 
         // Initialize Three.js scene, camera, and renderer
@@ -194,13 +198,17 @@
         }
 
         const hideBallCheckbox = document.getElementById("hideBall");
-
         hideBallCheckbox.addEventListener("change", () => {
             if (hideBallCheckbox.checked) {
                 ball.visible = false;
             } else {
                 ball.visible = true;
             }
+        });
+
+        const showFFOnlyCheckbox = document.getElementById("showFundementalFrequencyOnly");
+        showFFOnlyCheckbox.addEventListener("change", () => {
+            isShowFFOnly = showFFOnlyCheckbox.checked;
         });
 
         function animationLoop(t) {
@@ -378,55 +386,55 @@
             if (dataArrayAmp) {
                 analyserAmp.getByteFrequencyData(dataArrayAmp);
 
-        const bufferLength = analyserAmp.frequencyBinCount;
+                const bufferLength = analyserAmp.frequencyBinCount;
 
-        // Calculate frequency bins dynamically
-        const sampleRate = analyserAmp.context.sampleRate; // E.g., 44100 Hz
-        const nyquist = sampleRate / 2; // Nyquist frequency
-        const binSize = nyquist / bufferLength; // Frequency per bin
+                // Calculate frequency bins dynamically
+                const sampleRate = analyserAmp.context.sampleRate; // E.g., 44100 Hz
+                const nyquist = sampleRate / 2; // Nyquist frequency
+                const binSize = nyquist / bufferLength; // Frequency per bin
 
-        // Define frequency range bins (simpler split)
-        const lowFreqEnd = Math.floor(300 / binSize); // Up to 300 Hz
-        const midFreqEnd = Math.floor(1000 / binSize); // Up to 1000 Hz
-        const highFreqStart = Math.floor(3000 / binSize); // Above 3000 Hz
+                // Define frequency range bins (simpler split)
+                const lowFreqEnd = Math.floor(300 / binSize); // Up to 300 Hz
+                const midFreqEnd = Math.floor(1000 / binSize); // Up to 1000 Hz
+                const highFreqStart = Math.floor(3000 / binSize); // Above 3000 Hz
 
-        let lowFreq = 0, midFreq = 0, highFreq = 0;
+                let lowFreq = 0, midFreq = 0, highFreq = 0;
 
-        // Calculate low, mid, and high frequency sums
-        for (let i = 0; i < lowFreqEnd; i++) {
-        lowFreq += dataArrayAmp[i];
-        }
+                // Calculate low, mid, and high frequency sums
+                for (let i = 0; i < lowFreqEnd; i++) {
+                    lowFreq += dataArrayAmp[i];
+                }
 
-        for (let i = lowFreqEnd; i < midFreqEnd; i++) {
-        midFreq += dataArrayAmp[i];
-        }
+                for (let i = lowFreqEnd; i < midFreqEnd; i++) {
+                    midFreq += dataArrayAmp[i];
+                }
 
-        for (let i = highFreqStart; i < bufferLength; i++) {
-        highFreq += dataArrayAmp[i];
-        }
+                for (let i = highFreqStart; i < bufferLength; i++) {
+                    highFreq += dataArrayAmp[i];
+                }
 
-        // Normalize the sums to ensure consistent input
-        lowFreq = lowFreq / (255 * lowFreqEnd);
-        midFreq = midFreq / (255 * (midFreqEnd - lowFreqEnd));
-        highFreq = highFreq / (255 * (bufferLength - highFreqStart));
+                // Normalize the sums to ensure consistent input
+                lowFreq = lowFreq / (255 * lowFreqEnd);
+                midFreq = midFreq / (255 * (midFreqEnd - lowFreqEnd));
+                highFreq = highFreq / (255 * (bufferLength - highFreqStart));
 
-        const normalizedInput = { lowFreq, midFreq, highFreq };
+                const normalizedInput = { lowFreq, midFreq, highFreq };
 
-        console.log("Normalized Input:", normalizedInput);
+                console.log("Normalized Input:", normalizedInput);
 
-        // Run the classification using the trained network
-        const classification = net.run(normalizedInput);
-        console.log("Classification Scores:", classification);
+                // Run the classification using the trained network
+                const classification = net.run(normalizedInput);
+                console.log("Classification Scores:", classification);
 
-        // Find the most likely classification
-        const label = Object.keys(classification).reduce((a, b) =>
-        classification[a] > classification[b] ? a : b
-        );
+                // Find the most likely classification
+                const label = Object.keys(classification).reduce((a, b) =>
+                    classification[a] > classification[b] ? a : b
+                );
 
-        // Update UI or 3D scene based on the classification
-        console.log('Classification Result: ' + label);
-        const lblSoundClassification = document.getElementById("lblSoundClassification");
-        lblSoundClassification.innerText = 'Classification: ' + label;
+                // Update UI or 3D scene based on the classification
+                console.log('Classification Result: ' + label);
+                const lblSoundClassification = document.getElementById("lblSoundClassification");
+                lblSoundClassification.innerText = 'Classification: ' + label;
             }
 
             const averageFrequency = getAverageFrequency(dataArrayAmp);
@@ -465,7 +473,7 @@
 
             makeRoughBall(ball, modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 8), modulate(upperAvgFr, 0, 1, 0, 4));
 
-            updateRays(color, dataArrayAmp);
+            updateRays(color, dataArrayAmp, noteName);
 
             particleSystem.geometry.vertices.forEach((particle, i) => {
                 var frequencyIndex = Math.floor(i * (dataArrayAmp.length / particleSystem.geometry.vertices.length));
@@ -513,7 +521,7 @@
                 lblAudioFile.hidden = false;
                 rays = [];
                 lblNote.innerText = '';
-        lblSoundClassification.innerText = '';
+                lblSoundClassification.innerText = '';
                 //lastUpdateTime = 0;
                 lastNote = '';
             }
@@ -563,6 +571,36 @@
             return sum / frequencyData.length;
         }
 
+        function getNotesAtTime(frequencyData, sampleRate, fundamentalNoteName) {
+            const nyquist = sampleRate / 2;
+            const binSize = nyquist / frequencyData.length;
+            const threshold = 170;         // Lower than 180, more sensitive
+            const prominence = 5;          // Smaller difference from neighbors required
+            const maxNotes = 7;            // Allow more notes if needed
+
+            const peaks = [];
+
+            for (let i = 1; i < frequencyData.length - 1; i++) {
+                const amp = frequencyData[i];
+                if (
+                    amp > threshold &&
+                    amp > frequencyData[i - 1] + prominence &&
+                    amp > frequencyData[i + 1] + prominence
+                ) {
+                    peaks.push({ freq: i * binSize, amp });
+                }
+            }
+
+            peaks.sort((a, b) => b.amp - a.amp);
+            const topPeaks = peaks.slice(0, maxNotes);
+
+            const notesSet = new Set();
+            if (fundamentalNoteName) notesSet.add(fundamentalNoteName);
+            topPeaks.forEach(peak => notesSet.add(frequencyToNote(peak.freq)));
+
+            return Array.from(notesSet);
+        }
+
         // Function to map frequency to musical note
         function frequencyToNote(frequency) {
             const A4 = 440;
@@ -609,7 +647,6 @@
         }
 
         function createRays() {
-            const rayMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
             const boomboxPosition = new THREE.Vector3(boomBoxPositionX, boomBoxPositionY, boomBoxPositionZ);
 
             // Create three rays for each wall
@@ -665,7 +702,9 @@
                         endVector
                     ]);
 
-                    const line = new THREE.Line(geometry, rayMaterial);
+                    const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+
+                    const line = new THREE.Line(geometry, rayLineMaterial);
                     line.visible = false;
                     rays.push({ line, direction, wall }); // Store the direction
                     scene.add(line);
@@ -690,22 +729,22 @@
                     endVector
                 ]);
 
-                const line = new THREE.Line(geometry, rayMaterial);
+                const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+
+                const line = new THREE.Line(geometry, rayLineMaterial);
                 line.visible = false;
                 rays.push({ line, direction }); // Store the direction
                 scene.add(line);
             });
         }
 
-        function updateRays(color, dataArrayAmp) {
+        function updateRays(color, dataArrayAmp, noteName) {
             const amplitude = avg(dataArrayAmp) / 255;
-            const currentTime = Date.now();
             const lblNote = document.getElementById("lblNote");
+            const boomboxPosition = new THREE.Vector3(boomBoxPositionX, boomBoxPositionY, boomBoxPositionZ);
 
             // Filter out incident rays with a wall object
             const incidentRays = rays.filter(ray => ray.wall);
-
-            const showThreshold = 50; // Adjust the threshold as needed
 
             // Determine the number of incident rays to show
             const numRaysToShow = Math.floor(incidentRays.length / 2); // Show half of the incident rays
@@ -713,21 +752,37 @@
             // Randomly select which incident rays to show
             const indicesToShow = getRandomIndices(incidentRays.length, numRaysToShow);
 
-            incidentRays.forEach((ray, index) => {
-                const boomboxPosition = new THREE.Vector3(boomBoxPositionX, boomBoxPositionY, boomBoxPositionZ);
-                const direction = ray.direction.clone();
+            var activeNotes = noteName;
 
-                // Update ray color
-                ray.line.material.color.setHex(color);
+            if (!isShowFFOnly) {
+                // Get active notes (already implemented in your system)
+                activeNotes = getNotesAtTime(dataArrayAmp, analyserAmp.context.sampleRate, noteName);
+            }
+            console.log("Active Notes : " + activeNotes);
+
+            incidentRays.forEach((ray, index) => {
+
+                var noteColor = color;
+
+                if (!isShowFFOnly) {
+                    const noteName = activeNotes[index % activeNotes.length]; // Cycle through notes
+                    const colorHex = noteToColor(noteName);
+                    noteColor = new THREE.Color().setHex(colorHex);
+                    // Update ray color
+                    ray.line.material.color.copy(noteColor);
+                    ray.line.material.needsUpdate = true;
+                }
+                else {
+                    // Update ray color
+                    ray.line.material.color.setHex(noteColor);
+                }
 
                 // Adjust thickness based on amplitude
                 const thickness = calculateThickness(amplitude, 1);
                 ray.line.material.linewidth = thickness;
                 ray.line.geometry.computeBoundingSphere(); // Update bounding sphere for ray
 
-                //if (lastUpdateTime != 0 && currentTime - lastUpdateTime >= updateInterval) {
                 if (lastNote != '' && lastNote != lblNote.innerText) {
-                    //debugger;
                     // Show/hide rays based on random selection
                     if (indicesToShow.includes(index)) {
                         ray.line.visible = true;
@@ -745,51 +800,49 @@
                 }
                 // If the ray is shown, reflect it
                 if (ray.visible || ray.line.visible) {
-                    reflectRay(ray, color, amplitude);
+                    reflectRay(ray, noteColor, amplitude);
                 }
                 else {
                     // Hide the reflected ray if the incident ray is hidden
                     hideReflectedRay(ray);
                 }
             });
-            if (lastNote != lblNote.innerText) {
+
+
+            if (lastNote !== lblNote.innerText) {
                 lastNote = lblNote.innerText;
             }
         }
 
-        function reflectRay(ray, color, amplitude) {
-            // Get the last point of the current ray
-            const points = ray.line ? ray.line.geometry.attributes.position.array : ray.geometry.attributes.position.array;
-            const lastPoint = new THREE.Vector3(points[3], points[4], points[5]);
+        function reflectRay(ray, noteColor, amplitude) {
+            const positions = ray.line ? ray.line.geometry.attributes.position.array : ray.geometry.attributes.position.array;
 
-            // Find the closest wall and calculate the normal vector
+            // Get start and end points of the incident ray
+            const startPoint = new THREE.Vector3(positions[0], positions[1], positions[2]);
+            const lastPoint = new THREE.Vector3(positions[3], positions[4], positions[5]);
+
+            // Find the closest wall and get the normal
             let closestWall = null;
             let closestDistance = Infinity;
             let wallNormal = new THREE.Vector3();
-            let closestPointOnWall = new THREE.Vector3();
 
             walls.forEach((wall) => {
-                // Get the normal of the wall
                 const normal = new THREE.Vector3();
                 wall.getWorldDirection(normal).negate();
 
-                // Calculate the closest point on the wall to the last point
                 const plane = new THREE.Plane(normal, -normal.dot(wall.position));
                 const projectedPoint = new THREE.Vector3();
                 plane.projectPoint(lastPoint, projectedPoint);
 
-                // Calculate the distance from the last point to the wall
                 const wallDistance = lastPoint.distanceTo(projectedPoint);
                 if (wallDistance < closestDistance) {
                     closestDistance = wallDistance;
                     closestWall = wall;
                     wallNormal.copy(normal);
-                    closestPointOnWall.copy(projectedPoint);
                 }
             });
 
             // Calculate the direction vector of the ray
-            const startPoint = new THREE.Vector3(points[0], points[1], points[2]);
             const rayDirection = new THREE.Vector3().subVectors(lastPoint, startPoint).normalize();
 
             // Calculate the reflection direction
@@ -801,26 +854,24 @@
             // Calculate the intersection point with the room boundaries
             const intersectionPoint = calculateIntersectionWithRoom(lastPoint, reflectionDirection);
 
-            // Create a fallback material in case ray.material is undefined
-            const fallbackMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: calculateThickness(amplitude, 5), side: THREE.DoubleSide, opacity: 0.6, transparent: true });
-
-            // Use ray.material if available, otherwise use fallbackMaterial
-            const material = ray.material ? ray.material.clone() : fallbackMaterial;
-
             // Create the new reflected ray
             const reflectedRayGeometry = new THREE.BufferGeometry().setFromPoints([lastPoint, intersectionPoint]);
-            const reflectedRay = new THREE.Line(reflectedRayGeometry, material);
-            reflectedRay.material.color.setHex(color);
-            reflectedRay.material.opacity = 0.6;
-            reflectedRay.material.linewidth = calculateThickness(amplitude, 5); // Adjust thickness based on amplitude
 
+            const reflectedRayMaterial = new THREE.LineBasicMaterial({
+                color: !isShowFFOnly ? noteColor.clone() : new THREE.Color().setHex(noteColor),
+                opacity: 0.6,
+                transparent: true,
+                linewidth: calculateThickness(amplitude, 5)
+            });
+
+            const reflectedRay = new THREE.Line(reflectedRayGeometry, reflectedRayMaterial);
             // Store the incident ray reference in the reflected ray object
             reflectedRay.incidentRay = ray;
 
             rays.push(reflectedRay);
             scene.add(reflectedRay);
         }
-                
+
         // Function to generate an array of random indices
         function getRandomIndices(maxIndex, numIndices) {
             const indices = [];
