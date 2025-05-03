@@ -37,26 +37,29 @@
 
 <body style="font-size: 16px;">
     <div>
-        <input id="txtAudioURL" type="text" title="Audio URL"
-            value="https://saradaher.github.io/3DSoundReflection/c3_major_scale_piano.wav"
-            style="width: 100%;height: 30px;font-size: 16px !important;">
-        <audio id="music" preload="auto" style="display: none" crossOrigin="anonymous">
-            <source id="sourceAudio" type="audio/mpeg">
-        </audio>
         <p>
+            <input id="txtAudioURL" type="text" title="Audio URL"
+                value="https://saradaher.github.io/3DSoundReflection/c3_major_scale_piano.wav"
+                style="width: 100%;height: 30px;font-size: 16px !important;">
+            <audio id="music" preload="auto" style="display: none" crossOrigin="anonymous">
+                <source id="sourceAudio" type="audio/mpeg">
+            </audio>
+        <div>
             <label id="lblAudioFile" for="audioFile" class="file">
-                Or choose a local audio file
-                <input type="file" id="audioFile" accept="audio/*" />
+                Or choose a local audio file &nbsp;
+                <input type="file" id="audioFile" accept="audio/*" style="position: absolute;" />
             </label>
+        </div>
         </p>
         <div id="overlay">
             <button id="startButton" style="width: 100%;height: 50px;">Play</button>
         </div>
+
         <p>
         <div class="checkbox-container" style="width:32%; display:inline;">
             <input type="checkbox" id="hideBall" name="hideBall"><label for="hideBall">Hide Ball</label>
             <input type="checkbox" id="showFundementalFrequencyOnly" name="showFundementalFrequencyOnly"><label
-                for="showFundementalFrequencyOnly">Dominant Frequency</label>
+                for="showFundementalFrequencyOnly">Dominant Freq.</label>
         </div>
         <div class="label-container" style="width:68%; display:inline;">
             <label id="lblSoundClassification" style="font-weight: bold;"></label>
@@ -357,7 +360,7 @@
                             }
 
                             var particleMaterial = new THREE.PointsMaterial({
-                                color: 'red',
+                                color: 'black',
                                 size: 0.2
                             });
 
@@ -434,7 +437,7 @@
                 // Update UI or 3D scene based on the classification
                 console.log('Classification Result: ' + label);
                 const lblSoundClassification = document.getElementById("lblSoundClassification");
-                lblSoundClassification.innerText = 'Classification: ' + label;
+                lblSoundClassification.innerText = 'Classif. ' + label;
             }
 
             const averageFrequency = getAverageFrequency(dataArrayAmp);
@@ -574,7 +577,7 @@
         function getNotesAtTime(frequencyData, sampleRate, fundamentalNoteName) {
             const nyquist = sampleRate / 2;
             const binSize = nyquist / frequencyData.length;
-            const threshold = 170;         // Lower than 180, more sensitive
+            const threshold = 160;         // Lower than 180, more sensitive
             const prominence = 5;          // Smaller difference from neighbors required
             const maxNotes = 7;            // Allow more notes if needed
 
@@ -702,7 +705,7 @@
                         endVector
                     ]);
 
-                    const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+                    const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
                     const line = new THREE.Line(geometry, rayLineMaterial);
                     line.visible = false;
@@ -729,7 +732,7 @@
                     endVector
                 ]);
 
-                const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+                const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
                 const line = new THREE.Line(geometry, rayLineMaterial);
                 line.visible = false;
@@ -758,7 +761,7 @@
                 // Get active notes (already implemented in your system)
                 activeNotes = getNotesAtTime(dataArrayAmp, analyserAmp.context.sampleRate, noteName);
             }
-            console.log("Active Notes : " + activeNotes);
+            console.log("Active Notes: " + activeNotes);
 
             incidentRays.forEach((ray, index) => {
 
