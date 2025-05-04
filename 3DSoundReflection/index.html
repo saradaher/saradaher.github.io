@@ -30,6 +30,10 @@
             }
         }
 
+        canvas {
+            width: 100% !important;
+        }
+
         [type="search"]::-webkit-search-cancel-button {
             -webkit-appearance: none;
             appearance: none;
@@ -193,7 +197,7 @@
         scene.add(gridHelper);
 
         var geometry = new THREE.BoxGeometry(roomCubeDimension, roomCubeDimension, 0.4),
-            material = new THREE.MeshLambertMaterial({ color: 'white', transparent: true });
+            material = new THREE.MeshLambertMaterial({ color: 0x222222, transparent: true });
 
         var wall1 = new THREE.Mesh(geometry, material.clone());
         wall1.position.z = roomCubeDimension / 2;
@@ -391,7 +395,7 @@
                             }
 
                             var particleMaterial = new THREE.PointsMaterial({
-                                color: 'black',
+                                color: 'white',
                                 size: 0.2
                             });
 
