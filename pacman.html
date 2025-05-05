@@ -15,7 +15,7 @@
 			pacmanVideo.pause();
 		}
 
-		function hideStartButton() {
+		function hideStartButton(isUpdateLevel) {
 			const button = document.getElementById('startButton');
 
 			// Start the transition
@@ -26,25 +26,56 @@
 				button.style.display = 'none';
 				// Remove the event listener so it doesn't trigger again
 				button.removeEventListener('transitionend', handleTransitionEnd);
-				increaseLevel();
+
+				if (isUpdateLevel) {
+					increaseLevel();
+				}				
 			});
+		}
+
+		function hideLevel() {
+			const levelText = document.getElementById('levelText');
+			const levelUpImage = document.getElementById('levelUpImage');
+
+			// Start the transition
+			levelText.classList.add('level-hidden');
+			levelUpImage.classList.add('level-hidden');
+
+			// After transition ends, set display to none
+			levelText.addEventListener('transitionend', function handleTransitionEnd() {
+				levelText.style.display = 'none';
+				// Remove the event listener so it doesn't trigger again
+				levelText.removeEventListener('transitionend', handleTransitionEnd);		
+			});
+
+			// After transition ends, set display to none
+			levelUpImage.addEventListener('transitionend', function handleTransitionEnd() {
+				levelUpImage.style.display = 'none';
+				// Remove the event listener so it doesn't trigger again
+				levelUpImage.removeEventListener('transitionend', handleTransitionEnd);			
+			});			
 		}
 
 		function increaseLevel() {
 			counter += 1;
-			document.getElementById("levelText").innerText = 'Level ' + counter;
-			document.getElementById("levelText").style.display = 'block';
+			const levelText = document.getElementById('levelText');
+			levelText.innerText = 'Level ' + counter;
+			void levelText.offsetWidth;
+			levelText.classList.remove('level-hidden');
+			levelText.style.display = 'block';
 			if (counter > 1) {
-				document.getElementById("levelUpImage").style.display = 'block';
+				const levelUpImage = document.getElementById('levelUpImage');
+				levelUpImage.classList.remove('level-hidden');
+				void levelUpImage.offsetWidth;
+				levelUpImage.style.display = 'block';
 			}
 			// Wait 2 seconds and then hide
 			setTimeout(() => {
-				document.getElementById("levelText").style.display = 'none';
-				document.getElementById("levelUpImage").style.display = 'none';
+				hideLevel();
 			}, 2000);
 		}
 
-		window.addEventListener("mousemove", function () {
+		window.addEventListener("mousemove", function () {			
 			clearTimeout(timer);
 			timer = setTimeout(mouseStopped, 300);
 		});
@@ -97,8 +128,16 @@
 			display: none;
 		}
 
-		#levelText {
-			display: none;
+		.level-fade {
+			opacity: 1;
+			transition: opacity 0.5s ease, transform 0.5s ease;
+			transform: scale(1);
+		}
+
+		.level-hidden {
+			opacity: 0;
+			transform: scale(0.95);
+			pointer-events: none;
 		}
 
 		.pixel-text {
@@ -142,15 +181,15 @@
 <body>
 	<div class="video-container">
 		<video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();"
-			onmousemove="this.play();" onended="increaseLevel();" >
+			onmousemove="this.play();" onended="increaseLevel();" onplay="hideStartButton(false);" >
 			<source src="./pacman%20(360p).mp4" type="video/mp4">
 		</video>
 	</div>
 
 	<div class="overlay">
-		<img id="levelUpImage" src="./level_up_transparent.png" alt="Level Up">
-		<div id="levelText" class="pixel-text"></div>
-		<button id="startButton" class="pixel-button" onclick="hideStartButton();">Start</button>
+		<img id="levelUpImage" src="level_up_transparent.png" alt="Level Up" class="level-fade">
+		<div id="levelText" class="pixel-text level-fade"></div>
+		<button id="startButton" class="pixel-button" onclick="hideStartButton(true);">Start</button>
 	</div>
 
 </body>
