@@ -61,6 +61,12 @@
 			counter += 1;
 			const levelText = document.getElementById('levelText');
 			levelText.innerText = 'Level ' + counter;
+
+			// Show black background slide for 2 seconds
+			if (counter > 1) {
+				showBlackSlide(2000);
+			}
+
 			void levelText.offsetWidth;
 			levelText.classList.remove('level-hidden');
 			setTimeout(() => {
@@ -90,6 +96,15 @@
 			timer = setTimeout(mouseStopped, 300);
 		});
 
+		function showBlackSlide(duration = 2000) {
+			const blackSlide = document.getElementById('blackSlide');
+			blackSlide.classList.add('visible');
+
+			// Hide after duration
+			setTimeout(() => {
+				blackSlide.classList.remove('visible');
+			}, duration);
+		}
 	</script>
 
 	<style>
@@ -126,11 +141,33 @@
 			z-index: 10; /* make sure it’s above the video */
 			pointer-events: none; /* optional: allows clicks to pass through */
 		}
+		
+		.black-slide {
+			position: fixed; /* Use fixed to cover entire viewport */
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background-color: black;
+			opacity: 0;
+			z-index: 9; /* Just below overlay content (which is z-index: 10) */
+			pointer-events: none;
+			transition: opacity 0.5s ease;
+		}
+
+		.black-slide.visible {
+			opacity: 1;
+		}
+
+		#levelText {
+			z-index: inherit;
+		}
 
 		#levelUpImage {
 			max-width: 100%; /* Ensures the image never exceeds the container's width */
 			height: auto;
 			display: none;
+			z-index: inherit;
 		}
 
 		.level-fade {
@@ -184,6 +221,7 @@
 </head>
 
 <body>
+	<div class="black-slide" id="blackSlide"></div>
 	<div class="video-container">
 		<video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();"
 			onmousemove="this.play();" onended="increaseLevel();" onplay="hideStartButton(false);" >
