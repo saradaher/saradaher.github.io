@@ -2,49 +2,157 @@
 <html lang="en">
 
 <head>
-    <title>Pacman</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<title>Pacman</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<script>
-	var timer;
+		var timer;
+		var counter = 0;
 
-	function mouseStopped(){
-		pacmanVideo.pause();
-	}
+		function mouseStopped() {
+			pacmanVideo.pause();
+		}
 
-	window.addEventListener("mousemove", function(){
-		clearTimeout(timer);
-		timer = setTimeout(mouseStopped, 300);
-	});
+		function hideStartButton() {
+			const button = document.getElementById('startButton');
 
-	window.addEventListener("click", function(){
-		clearTimeout(timer);
-		timer = setTimeout(mouseStopped, 300);
-	});
+			// Start the transition
+			button.classList.add('hiding');
+
+			// After transition ends, set display to none
+			button.addEventListener('transitionend', function handleTransitionEnd() {
+				button.style.display = 'none';
+				// Remove the event listener so it doesn't trigger again
+				button.removeEventListener('transitionend', handleTransitionEnd);
+				increaseLevel();
+			});
+		}
+
+		function increaseLevel() {
+			counter += 1;
+			document.getElementById("levelText").innerText = 'Level ' + counter;
+			document.getElementById("levelText").style.display = 'block';
+			if (counter > 1) {
+				document.getElementById("levelUpImage").style.display = 'block';
+			}
+			// Wait 2 seconds and then hide
+			setTimeout(() => {
+				document.getElementById("levelText").style.display = 'none';
+				document.getElementById("levelUpImage").style.display = 'none';
+			}, 2000);
+		}
+
+		window.addEventListener("mousemove", function () {
+			clearTimeout(timer);
+			timer = setTimeout(mouseStopped, 300);
+		});
+
+		window.addEventListener("click", function () {
+			clearTimeout(timer);
+			timer = setTimeout(mouseStopped, 300);
+		});
+
 	</script>
-	
+
 	<style>
-	body {
-		margin: 0px;
-		background-color: black;
-	}
-	.video-container {
-		display: flex;
-	}
-        video {
-        	height: 100vh;
-        	width: 100%;
-        	object-fit: contain;
-        	position: absolute;
-    	}
+		body {
+			margin: 0px;
+			background-color: black;
+		}
+
+		.video-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			height: 100vh;
+			width: 100%;
+		}
+
+		video {
+			height: 100vh;
+			width: 100%;
+			object-fit: contain;
+			position: absolute;
+		}
+
+		.overlay {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			z-index: 10; /* make sure it’s above the video */
+			pointer-events: none; /* optional: allows clicks to pass through */
+		}
+
+		#levelUpImage {
+			max-width: 100%; /* Ensures the image never exceeds the container's width */
+			height: auto;
+			display: none;
+		}
+
+		#levelText {
+			display: none;
+		}
+
+		.pixel-text {
+			font-family: 'Press Start 2P', monospace;
+			color: #FAFAFA;
+			font-size: 18px;
+			margin-top: 20px;
+			text-align: center;
+		}
+
+		.pixel-button {
+			font-family: 'Press Start 2P', monospace;
+			color: #CC7000;
+			background-color: black; /* Match the background of the page */
+			border: 2px solid #CC7000; /* Border to match text color */
+			padding: 10px 20px;
+			font-size: 18px;
+			cursor: pointer;
+			margin-top: 20px;
+			text-align: center;	
+			width: auto; /* Make the width auto for responsive sizing */
+			transition: opacity 0.5s ease, transform 0.5s ease;
+			opacity: 1;
+			transform: scale(1);
+			pointer-events: auto;
+		}
+
+		.pixel-button:hover {
+			background-color: #CC7000; /* Change background on hover */
+			color: black; /* Text color changes when hovered */
+		}
+
+		.pixel-button.hiding {
+			opacity: 0;
+			transform: scale(0.9);
+			pointer-events: none;
+		}
 	</style>
 </head>
+
 <body>
-<div class="video-container">
-    <video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();" onmousemove="this.play();">
-    <source src="./pacman%20(360p).mp4" type="video/mp4">
-    </video>    
-</div>
-</body>	
+	<div class="video-container">
+		<video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();"
+			onmousemove="this.play();" onended="increaseLevel();" >
+			<source src="./pacman%20(360p).mp4" type="video/mp4">
+		</video>
+	</div>
+
+	<div class="overlay">
+		<img id="levelUpImage" src="level_up_transparent.png" alt="Level Up">
+		<div id="levelText" class="pixel-text"></div>
+		<button id="startButton" class="pixel-button" onclick="hideStartButton();">Start</button>
+	</div>
+
+</body>
+
 </html>
