@@ -16,6 +16,7 @@
 		}
 
 		function hideStartButton(isUpdateLevel) {
+
 			const button = document.getElementById('startButton');
 
 			// Start the transition
@@ -27,9 +28,9 @@
 				// Remove the event listener so it doesn't trigger again
 				button.removeEventListener('transitionend', handleTransitionEnd);
 
-				if (isUpdateLevel) {
+				if (isUpdateLevel || counter == 0) {
 					increaseLevel();
-				}				
+				}
 			});
 		}
 
@@ -45,15 +46,15 @@
 			levelText.addEventListener('transitionend', function handleTransitionEnd() {
 				levelText.style.display = 'none';
 				// Remove the event listener so it doesn't trigger again
-				levelText.removeEventListener('transitionend', handleTransitionEnd);		
+				levelText.removeEventListener('transitionend', handleTransitionEnd);
 			});
 
 			// After transition ends, set display to none
 			levelUpImage.addEventListener('transitionend', function handleTransitionEnd() {
 				levelUpImage.style.display = 'none';
 				// Remove the event listener so it doesn't trigger again
-				levelUpImage.removeEventListener('transitionend', handleTransitionEnd);			
-			});			
+				levelUpImage.removeEventListener('transitionend', handleTransitionEnd);
+			});
 		}
 
 		function increaseLevel() {
@@ -64,14 +65,14 @@
 			levelText.classList.remove('level-hidden');
 			setTimeout(() => {
 				levelText.style.display = 'block';
-			}, 500);			
+			}, 500);
 			if (counter > 1) {
 				const levelUpImage = document.getElementById('levelUpImage');
 				levelUpImage.classList.remove('level-hidden');
 				void levelUpImage.offsetWidth;
 				setTimeout(() => {
 					levelUpImage.style.display = 'block';
-				}, 500);					
+				}, 500);
 			}
 			// Wait 2 seconds and then hide
 			setTimeout(() => {
@@ -79,7 +80,7 @@
 			}, 2000);
 		}
 
-		window.addEventListener("mousemove", function () {			
+		window.addEventListener("mousemove", function () {
 			clearTimeout(timer);
 			timer = setTimeout(mouseStopped, 300);
 		});
@@ -185,7 +186,7 @@
 <body>
 	<div class="video-container">
 		<video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();"
-			onmousemove="this.play();" onended="increaseLevel();" onplay="hideStartButton(true);" >
+			onmousemove="this.play();" onended="increaseLevel();" onplay="hideStartButton(false);" >
 			<source src="./pacman%20(360p).mp4" type="video/mp4">
 		</video>
 	</div>
@@ -193,7 +194,7 @@
 	<div class="overlay">
 		<img id="levelUpImage" src="level_up_transparent.png" alt="Level Up" class="level-fade">
 		<div id="levelText" class="pixel-text level-fade"></div>
-		<button id="startButton" class="pixel-button">Start</button>
+		<button id="startButton" class="pixel-button" onclick="hideStartButton(true);">Start</button>
 	</div>
 
 </body>
