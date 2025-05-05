@@ -43,7 +43,7 @@
             background-size: 10px 10px;
         }
 
-        #clear-btn {
+        #clearButton {
             border: none;
             background: none;
             font-size: 24px;
@@ -61,11 +61,11 @@
 <body style="font-size: 16px;">
     <div>
         <p>
-        <div style="display: flex">
+        <div id="divURL" style="display: flex">
             <input id="txtAudioURL" type="text" title="Audio URL" list="fontstyle" autofocus
                 value="https://saradaher.github.io/3DSoundReflection/c3_major_scale_piano.wav"
-                style="width: 98%;height: 30px;font-size: 16px !important;" autocomplete="off">
-            <button id="clear-btn">×</button>
+                style="width: 98%;height: 30px;font-size: 16px !important; display: inline;" autocomplete="off">
+            <button id="clearButton">×</button>
             <datalist id="fontstyle">
                 <option value="https://saradaher.github.io/3DSoundReflection/c3_major_scale_piano.wav">
                     c3_major_scale_piano.wav</option>
@@ -89,8 +89,8 @@
                     fears - mad world.mp3</option>
             </datalist>
         </div>
-    </p>
-    <p>
+        </p>
+        <p>
         <div>
             <audio id="music" preload="auto" style="display: none" crossOrigin="anonymous">
                 <source id="sourceAudio" type="audio/mpeg">
@@ -126,7 +126,7 @@
         import { simplex } from 'https://saradaher.github.io/3DSoundReflection/simplex-noise.js';
 
         const input = document.getElementById('txtAudioURL');
-        const clearBtn = document.getElementById('clear-btn');
+        const clearBtn = document.getElementById('clearButton');
 
         input.addEventListener('input', () => {
             clearBtn.style.visibility = input.value ? 'visible' : 'hidden';
@@ -294,12 +294,14 @@
 
         const startButton = document.getElementById('startButton');
         const audioURL = document.getElementById('txtAudioURL');
+        const clearButton = document.getElementById('clearButton');
         var file = document.getElementById("audioFile");
         var lblAudioFile = document.getElementById("lblAudioFile");
         var files;
 
         file.onchange = function () {
             document.getElementById('txtAudioURL').value = '';
+            clearButton.style.visibility = 'hidden';
             files = this.files;
         }
 
@@ -311,19 +313,22 @@
 
             const overlay = document.getElementById('overlay');
             overlay.hidden = true;
+            const divURL = document.getElementById('divURL');
+            divURL.style.display = 'none';
             audioURL.disabled = true;
             lblAudioFile.hidden = true;
+            clearButton.disabled = true;
 
             const listener = new THREE.AudioListener();
             camera.add(listener);
 
             if (audioURL.value != '') {
-                lblAudioFile.hidden = true;
                 sourceAudio.src = audioURL.value;
             }
             else {
                 audioURL.hidden = true;
                 sourceAudio.src = URL.createObjectURL(files[0]);
+                clearButton.style.visibility = 'hidden';
             }
 
             positionalAudio = new THREE.PositionalAudio(listener);
@@ -583,8 +588,13 @@
             } else {
                 particleSystem.visible = false;
                 overlay.hidden = false;
+                divURL.style.display = 'flex';
+                audioURL.style.display = 'inline';
                 audioURL.disabled = false;
                 lblAudioFile.hidden = false;
+                clearButton.style.display = 'inline';
+                clearButton.disabled = false;
+
                 rays = [];
                 lblNote.innerText = '';
                 lblSoundClassification.innerText = '';
