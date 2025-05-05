@@ -62,12 +62,16 @@
 			levelText.innerText = 'Level ' + counter;
 			void levelText.offsetWidth;
 			levelText.classList.remove('level-hidden');
-			levelText.style.display = 'block';
+			setTimeout(() => {
+				levelText.style.display = 'block';
+			}, 500);			
 			if (counter > 1) {
 				const levelUpImage = document.getElementById('levelUpImage');
 				levelUpImage.classList.remove('level-hidden');
 				void levelUpImage.offsetWidth;
-				levelUpImage.style.display = 'block';
+				setTimeout(() => {
+					levelUpImage.style.display = 'block';
+				}, 500);					
 			}
 			// Wait 2 seconds and then hide
 			setTimeout(() => {
@@ -181,7 +185,7 @@
 <body>
 	<div class="video-container">
 		<video id="pacmanVideo" playsinline poster="./pacman_thumbnail.jpg" onclick="this.play();"
-			onmousemove="this.play();" onended="increaseLevel();" onplay="hideStartButton(false);" >
+			onmousemove="this.play();" onended="increaseLevel();" onplay="hideStartButton(true);" >
 			<source src="./pacman%20(360p).mp4" type="video/mp4">
 		</video>
 	</div>
@@ -189,7 +193,7 @@
 	<div class="overlay">
 		<img id="levelUpImage" src="level_up_transparent.png" alt="Level Up" class="level-fade">
 		<div id="levelText" class="pixel-text level-fade"></div>
-		<button id="startButton" class="pixel-button" onclick="hideStartButton(true);">Start</button>
+		<button id="startButton" class="pixel-button">Start</button>
 	</div>
 
 </body>
