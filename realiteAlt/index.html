@@ -232,13 +232,14 @@
                 })
                 .then(response => response.json())
                 .then(data => { dataResult = data; })
-                .then(() => { materialName.textContent = dataResult.labelName; confidence.textContent = (dataResult.confidence.toFixed(2) * 100.00) + "%"; })
+                .then(() => {
+                    setTimeout(() => {
+                        infoMessage.classList.add('hidden');
+                        resultCard.classList.remove('hidden');
+                    }, 1000);
+                    materialName.textContent = dataResult.labelName; confidence.textContent = (dataResult.confidence.toFixed(2) * 100.00) + "%";
+                })
             });
-
-            setTimeout(() => {
-                infoMessage.classList.add('hidden');
-                resultCard.classList.remove('hidden');
-            }, 1000);
         });
 
         altRealityBtn.addEventListener('click', () => {
