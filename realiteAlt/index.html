@@ -136,26 +136,20 @@
 </head>
 <body>
     <h1>THANK YOU FOR EXPLORING THE ALTERNATIVE REALITY</h1>
-
     <input type="file" accept="image/*" capture="environment" id="imageInput" />
-
     <button id="processButton" class="hidden">Process</button>
-
     <p id="infoMessage" class="hidden">Classifying material...</p>
-
     <div id="resultCard" class="card hidden">
         <h2>Material Identified</h2>
         <p><strong>Name of Material:</strong> <span id="materialName"></span></p>
         <p><strong>Confidence:</strong> <span id="confidence"></span></p>
         <button id="altRealityBtn">Show Alternative Reality Card</button>
     </div>
-
     <div id="altRealityCard" class="card hidden">
         <h2>Alternative Reality</h2>
         <img id="altImage" src="" alt="Alternative View" />
         <button onclick="printAltImage()">Print</button>
         <br>
-
         <!-- Feedback Form -->
         <form id="feedbackForm">
             <h3>Send the Alternative Reality Card</h3>
@@ -166,140 +160,152 @@
             <p id="sendStatus"></p>
         </form>
     </div>
-
     <button id="closeBtn" class="hidden">Close</button>
-    
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         emailjs.init("e25aZy85Okvh1kVnb");
 
-    const imageInput = document.getElementById('imageInput');
-    const processButton = document.getElementById('processButton');
-    const infoMessage = document.getElementById('infoMessage');
-    const resultCard = document.getElementById('resultCard');
-    const materialName = document.getElementById('materialName');
-    const confidence = document.getElementById('confidence');
-    const altRealityBtn = document.getElementById('altRealityBtn');
-    const altRealityCard = document.getElementById('altRealityCard');
-    const altImage = document.getElementById('altImage');
-    const closeBtn = document.getElementById('closeBtn');
+        const imageInput = document.getElementById('imageInput');
+        const processButton = document.getElementById('processButton');
+        const infoMessage = document.getElementById('infoMessage');
+        const resultCard = document.getElementById('resultCard');
+        const materialName = document.getElementById('materialName');
+        const confidence = document.getElementById('confidence');
+        const altRealityBtn = document.getElementById('altRealityBtn');
+        const altRealityCard = document.getElementById('altRealityCard');
+        const altImage = document.getElementById('altImage');
+        const closeBtn = document.getElementById('closeBtn');
 
-    var dataURL;
+        var dataURL;
 
-    debugger;
+        debugger;
 
-    imageInput.addEventListener('change', () => {
-        if (imageInput.files && imageInput.files.length > 0) {
-            const file = imageInput.files[0];
-            if (!file) return;
+        imageInput.addEventListener('change', () => {
+            if (imageInput.files && imageInput.files.length > 0) {
+                const file = imageInput.files[0];
+                if (!file) return;
 
-            const reader = new FileReader();
+                const reader = new FileReader();
 
-            reader.onload = function (e) {
-                dataURL = e.target.result;
-                console.log("Base64 Image URI:", dataURL);
+                reader.onload = function (e) {
+                    dataURL = e.target.result;
+                    console.log("Base64 Image URI:", dataURL);
 
-                // You can now use dataURL to display, upload, or send via email
-                // e.g. document.getElementById('preview').src = dataURL;
+                    // You can now use dataURL to display, upload, or send via email
+                    // e.g. document.getElementById('preview').src = dataURL;
+                };
+
+                reader.readAsDataURL(file);
+                processButton.classList.remove('hidden');
+            }
+        });
+
+        processButton.addEventListener('click', () => {
+            infoMessage.classList.remove('hidden');
+
+            imageInput.addEventListener('change', function () {
+
+            });
+            var dataResult;
+            var token;
+
+            fetch('https://www.nyckel.com/connect/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'grant_type=client_credentials&client_id=ra3h13bgf1hwmu2np7msj3455tl28mwe&client_secret=4t88h98pq5ugjk9mbe7qyn7o6xc8h97t43stmt5gyx1d9nmkjzrue6gglj2kxz8h'
+            })
+            .then(response => response.json())
+            .then(data => token = data)
+            .then(() => {
+                fetch('https://www.nyckel.com/v1/functions/materials-identifier/invoke', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token.access_token,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(
+                        { "data": dataURL }
+                    )
+                })
+                .then(response => response.json())
+                .then(data => { dataResult = data; })
+                .then(() => { materialName.textContent = dataResult.labelName; confidence.textContent = (dataResult.confidence.toFixed(2) * 100.00) + "%"; })
+            });
+
+            setTimeout(() => {
+                infoMessage.classList.add('hidden');
+                resultCard.classList.remove('hidden');
+            }, 1000);
+        });
+
+        altRealityBtn.addEventListener('click', () => {
+            const material = materialName.textContent.toLowerCase();
+            const imageMap = {
+                glass: "./ImgVerre.jpg",
+                paper: "./ImgPapier.jpg",
+                metal: "./ImgFer.jpg",
+                plastic: "./ImgPlastique.jpg",
+                foliage: "./ImgFoliage.jpg",
+                water: "./ImgEau.jpg",
+                fabric: "./ImgCotton.jpg",
+                leather: "./ImgCuir.jpg",
+                wood: "./ImgBois.jpg",
+                stone: "./ImgGranite.jpg"
+            };
+            const filename = imageMap[material] || "ImgVerre.jpg";
+            altImage.src = filename;
+            altRealityCard.classList.remove('hidden');
+            closeBtn.classList.remove('hidden');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            imageInput.value = "";
+            processButton.classList.add('hidden');
+            infoMessage.classList.add('hidden');
+            resultCard.classList.add('hidden');
+            altRealityCard.classList.add('hidden');
+            closeBtn.classList.add('hidden');
+            altImage.src = "";
+        });
+
+        // Handle feedback form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            //const occupation = document.getElementById('userOccupation').value;
+            const material = materialName.textContent;
+            const websiteLink = "https://saradaher.framer.website/contact";
+
+            const altImageEl = document.getElementById('altImage');
+
+            const params = {
+                to_email: email,
+                user_name: name,
+                //user_occupation: occupation,
+                material: material,
+                website_link: websiteLink,
+                card_image: altImageEl.src
             };
 
-            reader.readAsDataURL(file);
-        processButton.classList.remove('hidden');
-      }
-    });
-
-    processButton.addEventListener('click', () => {
-        infoMessage.classList.remove('hidden');
-
-        imageInput.addEventListener('change', function () {
-
+            emailjs.send("service_outlook_ma", "template_m1w2myv", params)
+              .then(function (response) {
+                  document.getElementById('sendStatus').textContent = "Email sent successfully!";
+              }, function (error) {
+                  document.getElementById('sendStatus').textContent = "Error sending email.";
+                  console.error("EmailJS Error:", error);
+              });
         });
-        var dataResult;
-        fetch('https://www.nyckel.com/v1/functions/materials-identifier/invoke', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + 'eyJhbGciOiJSUzI1NiIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJodHRwczovL3d3dy5ueWNrZWwuY29tIiwibmJmIjoxNzUzMDU0NjkzLCJpYXQiOjE3NTMwNTQ2OTMsImV4cCI6MTc1MzA1ODI5Mywic2NvcGUiOlsiYXBpIl0sImNsaWVudF9pZCI6InJhM2gxM2JnZjFod211Mm5wN21zajM0NTV0bDI4bXdlIiwianRpIjoiNkYzOUE0NDY5ODlGM0QyRkI1MUM4NTdDODI4REI0NjcifQ.hyFTN7ZMFRn45tsdCOP0Om_72-xjwcSkvPHYq_-vl6lugakkKLUERj6wQiOWnNXT2IpOpapu4fv7Di5f-vuSn_Oqim2S5D8_hfnfHoNHaL6v12Jj7tn48y0TCGipV6ty_EFdQEW4O8J_A4j5ReMiyNYCW9gVm7DFcLCmZRI2F-d9O-aea21csPYkm3UyKLFDsiPBBrffz50-Ljx-L3dQPoRFMgGd1hsummVYY6bT3x5RittYLhrEcQ8EJKAtQMRft0luxKHlxBg0OZGP9uoytjEyC4pn7CyGXC3764rK4lYbMLmzKXV4h-2q_C_XDatXmnDOfKe_4kAzAOXNHaypJg',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(
-                { "data": dataURL }
-            )
-        })
-        .then(response => response.json())
-        .then(data => { dataResult = data; })
-        .then(() => { materialName.textContent = dataResult.labelName; confidence.textContent = (dataResult.confidence.toFixed(2) * 100.00) + "%"; })
 
-        setTimeout(() => {
-            infoMessage.classList.add('hidden');
-            resultCard.classList.remove('hidden');
-        }, 1000);
-    });
+        function printAltImage() {
+            const imgSrc = document.getElementById('altImage').src;
 
-    altRealityBtn.addEventListener('click', () => {
-      const material = materialName.textContent.toLowerCase();
-      const imageMap = {
-          glass: "./ImgVerre.jpg",
-          paper: "./ImgPapier.jpg",
-          metal: "./ImgFer.jpg",
-          plastic: "./ImgPlastique.jpg",
-          foliage: "./ImgFoliage.jpg",
-          water: "./ImgEau.jpg",
-          fabric: "./ImgCotton.jpg",
-          leather: "./ImgCuir.jpg",
-          wood: "./ImgBois.jpg",
-          stone: "./ImgGranite.jpg"
-      };
-      const filename = imageMap[material] || "ImgVerre.jpg";
-      altImage.src = filename;
-      altRealityCard.classList.remove('hidden');
-      closeBtn.classList.remove('hidden');
-    });
-
-    closeBtn.addEventListener('click', () => {
-      imageInput.value = "";
-      processButton.classList.add('hidden');
-      infoMessage.classList.add('hidden');
-      resultCard.classList.add('hidden');
-      altRealityCard.classList.add('hidden');
-      closeBtn.classList.add('hidden');
-      altImage.src = "";
-    });
-
-    // Handle feedback form submission
-    document.getElementById('feedbackForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const name = document.getElementById('userName').value;
-        const email = document.getElementById('userEmail').value;
-        //const occupation = document.getElementById('userOccupation').value;
-        const material = materialName.textContent;
-        const websiteLink = "https://saradaher.framer.website/contact";
-
-        const altImageEl = document.getElementById('altImage');
-
-        const params = {
-            to_email: email,
-            user_name: name,
-            //user_occupation: occupation,
-            material: material,
-            website_link: websiteLink,
-            card_image: altImageEl.src
-        };
-
-        emailjs.send("service_outlook_ma", "template_m1w2myv", params)
-          .then(function (response) {
-              document.getElementById('sendStatus').textContent = "Email sent successfully!";
-          }, function (error) {
-              document.getElementById('sendStatus').textContent = "Error sending email.";
-              console.error("EmailJS Error:", error);
-          });
-    });
-
-    function printAltImage() {
-        const imgSrc = document.getElementById('altImage').src;
-
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        printWindow.document.write(`
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            printWindow.document.write(`
             <html>
               <head>
                 <title>Print</title>
@@ -332,8 +338,8 @@
               </body>
             </html>
           `);
-        printWindow.document.close();
-    }
+            printWindow.document.close();
+        }
 
     </script>
 </body>
