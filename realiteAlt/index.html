@@ -135,32 +135,32 @@
     </style>
 </head>
 <body>
-    <h1>THANK YOU FOR EXPLORING THE ALTERNATIVE REALITY</h1>
+    <h1>MERCI D'EXPLORER LES RÉALITÉS ALTERNATIVES</h1>
     <input type="file" accept="image/*" capture="environment" id="imageInput" />
     <button id="processButton" class="hidden">Process</button>
-    <p id="infoMessage" class="hidden">Classifying material...</p>
+    <p id="infoMessage" class="hidden">Classification du matériel en cours...</p>
     <div id="resultCard" class="card hidden">
-        <h2>Material Identified</h2>
-        <p><strong>Name of Material:</strong> <span id="materialName"></span></p>
-        <p><strong>Confidence:</strong> <span id="confidence"></span></p>
-        <button id="altRealityBtn">Show Alternative Reality Card</button>
+        <h2>Matériau identifié</h2>
+        <p><strong>Nom du matériau :</strong> <span id="materialName"></span></p>
+        <p><strong>Exactitude :</strong> <span id="confidence"></span></p>
+        <button id="altRealityBtn">Afficher votre carte <i>Réalités Alternatives</i></button>
     </div>
     <div id="altRealityCard" class="card hidden">
-        <h2>Alternative Reality</h2>
-        <img id="altImage" src="" alt="Alternative View" />
-        <button onclick="printAltImage()">Print</button>
+        <h2><i>Réalités Alternatives</i></h2>
+        <img id="altImage" src="" alt="Une Vision Alternative" />
+        <button onclick="printAltImage()">Imprimer</button>
         <br>
         <!-- Feedback Form -->
         <form id="feedbackForm">
-            <h3>Send the Alternative Reality Card</h3>
-            <input type="text" id="userName" placeholder="Your Name" required />
-            <input type="email" id="userEmail" placeholder="Your Email" required />
+            <h3>Recevez votre carte souvenir des <i>Réalités Alternatives</i></h3>
+            <input type="text" id="userName" placeholder="Nom" required />
+            <input type="email" id="userEmail" placeholder="Adresse électronique" required />
             <!--<input type="text" id="userOccupation" placeholder="Your Occupation" />-->
-            <button type="submit">Send</button>
+            <button type="submit">Envoyer</button>
             <p id="sendStatus"></p>
         </form>
     </div>
-    <button id="closeBtn" class="hidden">Close</button>
+    <button id="closeBtn" class="hidden">Terminer</button>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
@@ -295,7 +295,7 @@
 
             emailjs.send("service_outlook_ma", "template_m1w2myv", params)
               .then(function (response) {
-                  document.getElementById('sendStatus').textContent = "Email sent successfully!";
+                  document.getElementById('sendStatus').textContent = "Email envoyé avec succès !";
               }, function (error) {
                   document.getElementById('sendStatus').textContent = "Error sending email.";
                   console.error("EmailJS Error:", error);
