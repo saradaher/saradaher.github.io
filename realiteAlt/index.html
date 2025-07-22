@@ -136,6 +136,7 @@
 </head>
 <body>
     <h1>MERCI D'EXPLORER LES RÉALITÉS ALTERNATIVES</h1>
+    <h3>▪︎ Cliquer sur le bouton ci-dessous et prenez en photo un des objets de votre choix, proposés sur la table.</h3>
     <input type="file" accept="image/*" capture="environment" id="imageInput" />
     <button id="processButton" class="hidden">Analyser</button>
     <p id="infoMessage" class="hidden">Classification du matériel en cours...</p>
@@ -177,8 +178,6 @@
         const closeBtn = document.getElementById('closeBtn');
 
         var dataURL;
-
-        debugger;
 
         imageInput.addEventListener('change', () => {
             if (imageInput.files && imageInput.files.length > 0) {
