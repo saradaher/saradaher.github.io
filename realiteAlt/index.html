@@ -258,16 +258,16 @@
         altRealityBtn.addEventListener('click', () => {
             const material = materialName.textContent.toLowerCase();
             const imageMap = {
-                glass: "./ImgVerre.png",
-                //paper: "./ImgPapier.png",
-                metal: "./ImgFer.png",
-                plastic: "./ImgPlastique.png",
-                //foliage: "./ImgFeuillage.png",
-                water: "./ImgEau.png",
-                //fabric: "./ImgTissu.png",
-                //leather: "./ImgCuir.png",
-                //wood: "./ImgBois.png",
-                //stone: "./ImgPierre.png"
+                verre: "./ImgVerre.png",
+                //papier: "./ImgPapier.png",
+                fer: "./ImgFer.png",
+                plastique: "./ImgPlastique.png",
+                //feuillage: "./ImgFeuillage.png",
+                eau: "./ImgEau.png",
+                //tissu: "./ImgTissu.png",
+                //cuir: "./ImgCuir.png",
+                //bois: "./ImgBois.png",
+                //pierre: "./ImgPierre.png"
             };
             const filename = imageMap[material] || "ImgVerre.png";
             altImage.src = filename;
