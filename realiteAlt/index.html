@@ -167,7 +167,7 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        emailjs.init("e25aZy85Okvh1kVnb");
+        emailjs.init("fnQsuROmnTLsuEGrC");
 
         const imageInput = document.getElementById('imageInput');
         const processButton = document.getElementById('processButton');
@@ -306,7 +306,7 @@
                 card_image: altImageEl.src
             };
 
-            emailjs.send("service_outlook_ma", "template_m1w2myv", params)
+            emailjs.send("service_gmail_sd", "template_m1w2myv", params)
               .then(function (response) {
                   document.getElementById('sendStatus').textContent = "Email envoyé avec succès !";
                   document.getElementById('userName').value = "";
