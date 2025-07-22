@@ -309,6 +309,8 @@
             emailjs.send("service_outlook_ma", "template_m1w2myv", params)
               .then(function (response) {
                   document.getElementById('sendStatus').textContent = "Email envoyé avec succès !";
+                  document.getElementById('userName').value = "";
+                  document.getElementById('userEmail').value = "";
               }, function (error) {
                   document.getElementById('sendStatus').textContent = "Error sending email.";
                   console.error("EmailJS Error:", error);
