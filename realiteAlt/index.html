@@ -209,7 +209,19 @@
             });
             var dataResult;
             var token;
-
+            
+            const materialMap = {
+                glass: "Verre",
+                paper: "Papier",
+                metal: "Fer",
+                plastic: "Plastique",
+                foliage: "Feuillage",
+                water: "Eau",
+                fabric: "Tissu",
+                leather: "Cuir",
+                wood: "Bois",
+                stone: "Pierre"
+            };                 
             fetch('https://www.nyckel.com/connect/token', {
                 method: 'POST',
                 headers: {
@@ -236,8 +248,8 @@
                     setTimeout(() => {
                         infoMessage.classList.add('hidden');
                         resultCard.classList.remove('hidden');
-                    }, 1000);
-                    materialName.textContent = dataResult.labelName; confidence.textContent = (dataResult.confidence.toFixed(2) * 100.00) + "%";
+                    }, 1000);               
+                    materialName.textContent = materialMap(dataResult.labelName.toLowerCase()); confidence.textContent = (dataResult.confidence.toFixed(2) * 100.00) + "%";
                 })
             });
         });
@@ -246,15 +258,15 @@
             const material = materialName.textContent.toLowerCase();
             const imageMap = {
                 glass: "./ImgVerre.jpg",
-                paper: "./ImgPapier.jpg",
+                //paper: "./ImgPapier.jpg",
                 metal: "./ImgFer.jpg",
                 plastic: "./ImgPlastique.jpg",
-                foliage: "./ImgFoliage.jpg",
+                //foliage: "./ImgFeuillage.jpg",
                 water: "./ImgEau.jpg",
-                fabric: "./ImgCotton.jpg",
-                leather: "./ImgCuir.jpg",
-                wood: "./ImgBois.jpg",
-                stone: "./ImgGranite.jpg"
+                //fabric: "./ImgTissu.jpg",
+                //leather: "./ImgCuir.jpg",
+                //wood: "./ImgBois.jpg",
+                //stone: "./ImgPierre.jpg"
             };
             const filename = imageMap[material] || "ImgVerre.jpg";
             altImage.src = filename;
