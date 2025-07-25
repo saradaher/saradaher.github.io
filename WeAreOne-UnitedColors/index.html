@@ -123,7 +123,7 @@
         import { OrbitControls } from 'https://unpkg.com/three@0.120.0/examples/jsm/controls/OrbitControls.js';
         import { PositionalAudioHelper } from 'https://unpkg.com/three@0.120.0/examples/jsm/helpers/PositionalAudioHelper.js';
         import { GLTFLoader } from 'https://unpkg.com/three@0.120.0/examples/jsm/loaders/GLTFLoader.js';
-        import { simplex } from 'https://saradaher.github.io/WeAreOne-UnitedColors/simplex-noise.js';
+        import { simplex } from 'https://saradaher.github.io/3DSoundReflection/simplex-noise.js';
 
         const input = document.getElementById('txtAudioURL');
         const clearBtn = document.getElementById('clearButton');
@@ -351,7 +351,7 @@
                     positionalAudio.add(helper);
 
                     const gltfLoader = new GLTFLoader();
-                    gltfLoader.load('https://saradaher.github.io/WeAreOne-UnitedColors/BoomBox.glb', function (gltf) {
+                    gltfLoader.load('https://saradaher.github.io/3DSoundReflection/BoomBox.glb', function (gltf) {
 
                         const boomBox = gltf.scene;
 
