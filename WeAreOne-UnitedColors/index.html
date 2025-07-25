@@ -150,7 +150,7 @@
 
         const noise = new simplex.SimplexNoise();
 
-        var roomCubeDimension = 40;
+        var roomCubeDimension = 80;
         var boomBoxPositionX = 0;
         var boomBoxPositionY = -(roomCubeDimension / 2) + 1;
         var boomBoxPositionZ = 0;
@@ -160,7 +160,7 @@
         //let dataArray;
         let dataArrayAmp;
         let group;
-        var icosahedronGeometry = new THREE.IcosahedronGeometry(20, 4);
+        var icosahedronGeometry = new THREE.IcosahedronGeometry(40, 4);
         var lambertMaterial = new THREE.MeshLambertMaterial({
         color: 'white',
         wireframe: true,
@@ -349,8 +349,8 @@
         var distanceValue = roomCubeDimension;
         var coneInnerAngle = 180;
         var coneOuterAngle = 360;
-        var coneOuterGain = 0.2;
-        var range = 0.2;
+        var coneOuterGain = 0.4;
+        var range = 0.4;
         const helper = new PositionalAudioHelper(positionalAudio, range);
 
         const loader = new THREE.AudioLoader();
