@@ -191,7 +191,7 @@
 
         // Initialize Three.js scene, camera, and renderer
         let scene = new THREE.Scene();
-        scene.background = new THREE.Color('coral1');
+        scene.background = new THREE.Color().setHex('0xff7256'); //coral1
 
         let camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight);
         camera.position.set(0, 0, 70);
