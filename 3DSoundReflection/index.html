@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -115,10 +114,10 @@
 </head>
 <body style="font-size: 16px;">
     <div class="content">
-        <div id="divLogInForm">
+        <div id="divLogInForm" style="display: none;">
             <!-- Log In Form -->
             <form id="logInForm">
-                <h3>Enter your name and email address to access:</h3>
+                <h3>Enter your name and email address to access ♫</h3>
                 <input type="text" id="userName" placeholder="Name" required />
                 <input type="email" id="userEmail" placeholder="Email" required />
                 <button type="submit">Submit</button>
@@ -128,7 +127,7 @@
             <p>
                 <div id="divURL" style="display: flex">
                     <input id="txtAudioURL" type="text" title="Audio URL" list="fontstyle" autofocus
-                       value="https://saradaher.github.io/3DSoundReflection/c3_major_scale_piano.wav"
+                           value="https://saradaher.github.io/WeAreOne-UnitedColors/c3_major_scale_piano.wav"
                            style="width: 98%;height: 30px;font-size: 16px !important; display: inline;" autocomplete="off">
                     <button id="clearButton">×</button>
                     <datalist id="fontstyle">
@@ -141,7 +140,7 @@
                         <option value="https://saradaher.github.io/3DSoundReflection/Beethoven_Fifth-MM1-21_Midi-Piano.wav">
                             Beethoven_Fifth-MM1-21_Midi-Piano.wav
                         </option>
-                    <option value="https://saradaher.github.io/3DSoundReflection/Cyndi Lauper - True Colors.mp3">
+                        <option value="https://saradaher.github.io/WeAreOne-UnitedColors/Cyndi Lauper - True Colors.mp3">
                             Cyndi
                             Lauper - True Colors.mp3
                         </option>
@@ -159,7 +158,7 @@
                         <option value="https://saradaher.github.io/3DSoundReflection/tears for fears - everybody wants to rule the world.mp3">
                             tears for fears - everybody wants to rule the world.mp3
                         </option>
-                    <option value="https://saradaher.github.io/3DSoundReflection/tears for fears - mad world.mp3">
+                        <option value="https://saradaher.github.io/WeAreOne-UnitedColors/tears for fears - mad world.mp3">
                             tears for
                             fears - mad world.mp3
                         </option>
@@ -180,7 +179,6 @@
             <div id="overlay">
                 <button id="startButton" style="width: 100%;height: 50px;">Play</button>
             </div>
-
             <p>
                 <div class="checkbox-container" style="width:32%; display:inline;">
                     <input type="checkbox" id="hideBall" name="hideBall"><label for="hideBall">Hide Ball</label>
@@ -201,8 +199,7 @@
 
             emailjs.init("fnQsuROmnTLsuEGrC");
 
-            const divLogInForm = document.getElementById('divLogInForm');
-            divLogInForm.style.visibility = 'visible';
+            checkCookie();
 
             const input = document.getElementById('txtAudioURL');
             const clearBtn = document.getElementById('clearButton');
@@ -361,16 +358,63 @@
 
             emailjs.send("service_gmail_sd", "template_u5z3hod", params)
             .then(function (response) {
+            setCookie("username", document.getElementById('userName').value, 30);
             document.getElementById('userName').value = "";
             document.getElementById('userEmail').value = "";
             const divMain = document.getElementById('divMain');
             const divLogInForm = document.getElementById('divLogInForm');
             divMain.style.display = 'block';
-            document.getElementsByTagName("canvas")[0].style.display = "block";
             divLogInForm.style.display = 'none';
+            document.getElementsByTagName("canvas")[0].style.display = "block";
+
             }, function (error) {
             });
             });
+
+            function setCookie(cname,cvalue,exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            }
+
+            function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+            }
+            return "";
+            }
+
+            function checkCookie() {
+            let user = getCookie("username");
+            const divMain = document.getElementById('divMain');
+            const divLogInForm = document.getElementById('divLogInForm');
+            const canvasElmt = document.getElementsByTagName("canvas")[0]; 
+            if (user != "") {
+            divMain.style.display = 'block';
+            divLogInForm.style.display = 'none';
+            if (canvasElmt)
+            {
+                canvasElmt.style.display = "block";
+            }
+            } else {
+            divMain.style.display = 'none';
+            divLogInForm.style.display = 'block';
+            if (canvasElmt)
+            {
+            canvasElmt.style.display = "none";
+            }
+            }
+            }
 
             function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
