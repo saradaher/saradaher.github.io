@@ -360,7 +360,7 @@
             };
 
             emailjs.send("service_gmail_sd", "template_u5z3hod", params)
-            then(function (response) {
+            .then(function (response) {
             document.getElementById('userName').value = "";
             document.getElementById('userEmail').value = "";
             const divMain = document.getElementById('divMain');
@@ -368,7 +368,6 @@
             divMain.style.display = 'block';
             document.getElementsByTagName("canvas")[0].style.display = "block";
             divLogInForm.style.display = 'none';
-
             }, function (error) {
             });
             });
