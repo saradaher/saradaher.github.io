@@ -44,7 +44,6 @@
 
         canvas {
             width: 100% !important;
-            display: none;
         }
 
         [type="search"]::-webkit-search-cancel-button {
@@ -66,23 +65,26 @@
             display: inline;
         }
 
-        button {
+        #btnSubmit,
+        #startButton {
             background-color: black;
             color: white;
             padding: 10px 20px;
             margin-top: 15px;
+            margin-bottom: 15px;
             border: none;
             border-radius: 6px;
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.2s ease, box-shadow 0.3s ease;
             width: max-content;
+            background-color: #ff1919;
         }
 
-            button:hover {
-                background-color: gray;
-                box-shadow: 0 0 10px #D32F2F88;
-            }
+        button:hover {
+            background-color: gray;
+            box-shadow: 0 0 10px #D32F2F88;
+        }
 
         form {
             margin-top: 20px;
@@ -120,7 +122,7 @@
                 <h3>Enter your name and email address to access ♫</h3>
                 <input type="text" id="userName" placeholder="Name" required />
                 <input type="email" id="userEmail" placeholder="Email" required />
-                <button type="submit">Submit</button>
+                <button type="submit" id="btnSubmit">Submit</button>
             </form>
         </div>
         <div id="divMain" style="display: none;">
@@ -358,7 +360,7 @@
 
             emailjs.send("service_gmail_sd", "template_u5z3hod", params)
             .then(function (response) {
-            setCookie("username", document.getElementById('userName').value, 30);
+            setCookie("username", document.getElementById('userName').value, 3);
             document.getElementById('userName').value = "";
             document.getElementById('userEmail').value = "";
             const divMain = document.getElementById('divMain');
@@ -398,13 +400,13 @@
             let user = getCookie("username");
             const divMain = document.getElementById('divMain');
             const divLogInForm = document.getElementById('divLogInForm');
-            const canvasElmt = document.getElementsByTagName("canvas")[0]; 
+            const canvasElmt = document.getElementsByTagName("canvas")[0];
             if (user != "") {
             divMain.style.display = 'block';
             divLogInForm.style.display = 'none';
             if (canvasElmt)
             {
-                canvasElmt.style.display = "block";
+            canvasElmt.style.display = "block";
             }
             } else {
             divMain.style.display = 'none';
