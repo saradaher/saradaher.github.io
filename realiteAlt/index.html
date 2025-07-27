@@ -158,7 +158,7 @@
         <h2>Matériau identifié</h2>
         <p><strong>Nom du matériau :</strong> <span id="materialName"></span></p>
         <p><strong>Exactitude :</strong> <span id="confidence"></span></p>
-        <button id="altRealityBtn">Valider<i>Réalités Alternatives</i></button>
+        <button id="altRealityBtn">Valider</button>
     </div>
     <div id="altRealityCard" class="card hidden">
         <img id="altImage" src="" alt="Une Vision Alternative" style="visibility: none;" />
@@ -288,7 +288,7 @@
             };
             const filename = imageMap[material] || "ImgVerre.png";
             altImage.src = filename;
-            altRealityCard.classList.remove('hidden');
+            //altRealityCard.classList.remove('hidden');
             closeBtn.classList.remove('hidden');
         });
 
