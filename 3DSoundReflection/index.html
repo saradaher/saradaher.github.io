@@ -199,7 +199,7 @@
             import { GLTFLoader } from 'https://unpkg.com/three@0.120.0/examples/jsm/loaders/GLTFLoader.js';
             import { simplex } from 'https://saradaher.github.io/3DSoundReflection/simplex-noise.js';
 
-            emailjs.init("fnQsuROmnTLsuEGrC");
+            emailjs.init("e25aZy85Okvh1kVnb");
 
             checkCookie();
 
@@ -356,9 +356,10 @@
             const params = {
             email: email,
             name: name,
+            title: "3DSoundReflection"
             };
 
-            emailjs.send("service_gmail_sd", "template_u5z3hod", params)
+            emailjs.send("service_outlook_ma", "template_u5z3hod", params)
             .then(function (response) {
             setCookie("username", document.getElementById('userName').value, 3);
             document.getElementById('userName').value = "";
