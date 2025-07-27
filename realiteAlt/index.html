@@ -161,7 +161,7 @@
         <button id="altRealityBtn">Valider</button>
     </div>
     <div id="altRealityCard" class="card hidden">
-        <img id="altImage" src="" alt="Une Vision Alternative" style="visibility: none;" />
+        <img id="altImage" src="" alt="Une Vision Alternative" style="display: none;" />
         <br>
         <button onclick="printAltImage()" style="display: none;">Imprimer</button>
         <br>
@@ -288,7 +288,7 @@
             };
             const filename = imageMap[material] || "ImgVerre.png";
             altImage.src = filename;
-            //altRealityCard.classList.remove('hidden');
+            altRealityCard.classList.remove('hidden');
             closeBtn.classList.remove('hidden');
         });
 
