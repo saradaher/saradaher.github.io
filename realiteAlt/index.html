@@ -158,12 +158,12 @@
         <h2>Matériau identifié</h2>
         <p><strong>Nom du matériau :</strong> <span id="materialName"></span></p>
         <p><strong>Exactitude :</strong> <span id="confidence"></span></p>
-        <button id="altRealityBtn">Afficher votre carte <i>Réalités Alternatives</i></button>
+        <button id="altRealityBtn">Valider<i>Réalités Alternatives</i></button>
     </div>
     <div id="altRealityCard" class="card hidden">
-        <img id="altImage" src="" alt="Une Vision Alternative" />
+        <img id="altImage" src="" alt="Une Vision Alternative" style="visibility: none;" />
         <br>
-        <button onclick="printAltImage()">Imprimer</button>
+        <button onclick="printAltImage()" style="display: none;">Imprimer</button>
         <br>
         <!-- Feedback Form -->
         <form id="feedbackForm">
