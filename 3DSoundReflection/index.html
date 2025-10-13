@@ -57,6 +57,19 @@
             background-size: 10px 10px;
         }
 
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input[type="text"], input[type="email"] {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed;
+        }
+
         #clearButton {
             border: none;
             background: none;
@@ -119,7 +132,6 @@
 
 <body style="font-size: 16px;">
     <h1 id="contentTitle">UnitedColors / One</h1>
-    <h3 id="lblServerAudioFile">Choose a server audio file:</h3>
     <div class="content">
         <div id="divLogInForm" style="display: none;">
             <!-- Log In Form -->
@@ -132,6 +144,7 @@
         </div>
         <div id="divMain" style="display: none;">
             <p>
+                <h3 id="lblServerAudioFile">Choose a server audio file:</h3>
                 <div id="divURL" style="display: flex">
                     <input id="txtAudioURL" type="text" title="Audio URL" list="fontstyle" autofocus
                            value="https://saradaher.github.io/WeAreOne-UnitedColors/c3_major_scale_piano.wav"
