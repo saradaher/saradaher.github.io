@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -17,6 +18,7 @@
         body {
             display: flex;
             flex-direction: column;
+            background-color: darkgray;
         }
 
         .content {
@@ -70,8 +72,8 @@
             background-color: black;
             color: white;
             padding: 10px 20px;
-            margin-top: 15px;
-            margin-bottom: 15px;
+            margin-top: 5px;
+            margin-bottom: 5px;
             border: none;
             border-radius: 6px;
             font-size: 16px;
@@ -86,35 +88,38 @@
             box-shadow: 0 0 10px #D32F2F88;
         }
 
-        form {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+
+        #contentTitle {
+            margin: 5px;
         }
 
-        input[type="text"], input[type="email"] {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px dashed;
+        #lblServerAudioFile {
+            margin-bottom: 3px;
         }
 
-        footer {
-            padding: 10px 10px 10px 0px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #888;
-            border-top: 1px solid #333;
+        #footer {
+            position: relative;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            max-width: 600px;
-            flex-shrink: 0;
+            background: rgba(20, 20, 20, 0.8);
+            color: #f0f0f0;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 14px;
+            z-index: 10; /* make sure it stays above the WebGL canvas */
+            backdrop-filter: blur(6px); /* optional glassy look */
         }
     </style>
+
     <!-- brain -->
     <script src="https://unpkg.com/brain.js@2.0.0-beta.2/dist/brain-browser.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
+
 <body style="font-size: 16px;">
+    <h1 id="contentTitle">UnitedColors / One</h1>
+    <h3 id="lblServerAudioFile">Choose a server audio file:</h3>
     <div class="content">
         <div id="divLogInForm" style="display: none;">
             <!-- Log In Form -->
@@ -172,10 +177,12 @@
                     <audio id="music" preload="auto" style="display: none" crossOrigin="anonymous">
                         <source id="sourceAudio" type="audio/mpeg">
                     </audio>
-                    <label id="lblAudioFile" for="audioFile" class="file">
-                        Or choose a local audio file &nbsp;
-                        <input type="file" id="audioFile" accept="audio/*" style="position: absolute;" />
-                    </label>
+                    <h3>
+                        <label id="lblAudioFile" for="audioFile" class="file">
+                            Or choose a local audio file: &nbsp;
+                            <input type="file" id="audioFile" accept="audio/*" style="position: absolute;" />
+                        </label>
+                    </h3>
                 </div>
             </p>
             <div id="overlay">
@@ -192,12 +199,26 @@
                 </div>
             </p>
         </div>
+
+        <script type="importmap">
+            {
+            "imports": {
+            "three": "https://unpkg.com/three@0.180.0/build/three.module.js"
+            }
+            }
+        </script>
+
         <script type="module">
-            import * as THREE from 'https://unpkg.com/three@0.120.0/build/three.module.js';
-            import { OrbitControls } from 'https://unpkg.com/three@0.120.0/examples/jsm/controls/OrbitControls.js';
-            import { PositionalAudioHelper } from 'https://unpkg.com/three@0.120.0/examples/jsm/helpers/PositionalAudioHelper.js';
-            import { GLTFLoader } from 'https://unpkg.com/three@0.120.0/examples/jsm/loaders/GLTFLoader.js';
+            import * as THREE from 'three';
+            import { OrbitControls } from 'https://unpkg.com/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+            import { PositionalAudioHelper } from 'https://unpkg.com/three@0.180.0/examples/jsm/helpers/PositionalAudioHelper.js';
+            import { GLTFLoader } from 'https://unpkg.com/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
             import { simplex } from 'https://saradaher.github.io/3DSoundReflection/simplex-noise.js';
+            import { Line2 } from 'https://unpkg.com/three@0.180.0/examples/jsm/lines/Line2.js';
+            import { LineMaterial } from 'https://unpkg.com/three@0.180.0/examples/jsm/lines/LineMaterial.js';
+            import { LineGeometry } from 'https://unpkg.com/three@0.180.0/examples/jsm/lines/LineGeometry.js';
+            import * as GeometryUtils from 'https://unpkg.com/three@0.180.0/examples/jsm/utils/GeometryUtils.js';
+            import { VRButton } from 'https://unpkg.com/three@0.180.0/examples/jsm/webxr/VRButton.js'
 
             emailjs.init("fnQsuROmnTLsuEGrC");
 
@@ -226,7 +247,7 @@
 
             const noise = new simplex.SimplexNoise();
 
-            var roomCubeDimension = 80;
+            var roomCubeDimension = 20;
             var boomBoxPositionX = 0;
             var boomBoxPositionY = -(roomCubeDimension / 2) + 1;
             var boomBoxPositionZ = 0;
@@ -236,7 +257,7 @@
             //let dataArray;
             let dataArrayAmp;
             let group;
-            var icosahedronGeometry = new THREE.IcosahedronGeometry(40, 4);
+            var icosahedronGeometry = new THREE.IcosahedronGeometry(10, 4);
             var lambertMaterial = new THREE.MeshLambertMaterial({
             color: 'white',
             wireframe: true,
@@ -255,6 +276,7 @@
             //let lastUpdateTime = 0; // Define lastUpdateTime globally
             //const updateInterval = 1000; // Update interval in milliseconds
             let lastNote = '';
+            let isPause = 0;
 
             ball.material.color.setHex(0xff1919);
 
@@ -290,9 +312,12 @@
 
             var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setAnimationLoop(animationLoop);
             renderer.shadowMap.enabled = true;
+            renderer.xr.enabled = true;
             document.body.appendChild(renderer.domElement);
+            document.body.appendChild(VRButton.createButton(renderer));
 
             window.addEventListener('resize', onWindowResize);
 
@@ -420,6 +445,7 @@
             }
 
             function onWindowResize() {
+            LineMaterial.resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -465,26 +491,111 @@
             const clearButton = document.getElementById('clearButton');
             var file = document.getElementById("audioFile");
             var lblAudioFile = document.getElementById("lblAudioFile");
+            var lblServerAudioFile = document.getElementById("lblServerAudioFile");
             var files;
 
             file.onchange = function () {
             document.getElementById('txtAudioURL').value = '';
             clearButton.style.visibility = 'hidden';
             files = this.files;
+            isPause = 0;
             }
 
-            startButton.addEventListener('click', init);
+            audioURL.onchange = function () {
+            isPause = 0;
+            }
+
+            startButton.addEventListener('click', handlePlayPause);
+
+            function resumeAnalyser() {
+            if (!positionalAudio) return;
+
+            // Recreate or reconnect the analyser if missing
+            if (!analyser || !analyserAmp) {
+            const audioAnalyser = new THREE.AudioAnalyser(positionalAudio);
+            analyser = audioAnalyser.analyser;
+            analyser.fftSize = 2048;
+            analyser.minDecibels = -100;
+            analyser.maxDecibels = -10;
+            analyser.smoothingTimeConstant = 0.85;
+
+            const audioAnalyserAmp = new THREE.AudioAnalyser(positionalAudio);
+            analyserAmp = audioAnalyserAmp.analyser;
+            analyserAmp.fftSize = 512;
+
+            const bufferLength = analyserAmp.frequencyBinCount;
+            dataArrayAmp = new Uint8Array(bufferLength);
+            console.log("🎧 Analyser reinitialized after resume");
+            }
+
+            // Resume Web Audio context if suspended
+            if (analyser.context && analyser.context.state === 'suspended') {
+            analyser.context.resume();
+            console.log("🔊 Web Audio context resumed");
+            }
+            }
+
+            function handlePlayPause() {
+            // If audio exists and is playing → pause
+            if (positionalAudio && startButton.textContent == "Pause") {
+            isPause = 1;
+            positionalAudio.pause();
+            renderer.setAnimationLoop(null); // stop rendering updates
+            //analyser = null;
+            //analyserAmp = null;
+            startButton.textContent = "Play";
+            isSoundPlaying = false;
+            overlay.hidden = false;
+            divURL.style.display = 'flex';
+            audioURL.style.display = 'inline';
+            audioURL.disabled = false;
+            lblAudioFile.hidden = false;
+            lblServerAudioFile.hidden = false;
+            clearButton.style.display = 'inline';
+            clearButton.disabled = false;
+            lblNote.innerText = '';
+            lblSoundClassification.innerText = '';
+            lastNote = '';
+            console.log("⏸️ Paused audio");
+            }
+            // If audio exists but is paused → resume
+            else if (positionalAudio && positionalAudio.buffer && isPause == 1 && isSoundPlaying == false) {
+            // Resume audio, analyser, and animation
+            resumeAnalyser();
+            positionalAudio.play();
+            renderer.setAnimationLoop(animate); // restart the render loop
+            startButton.textContent = "Pause";
+            isSoundPlaying = true;
+            divURL.style.display = 'none';
+            audioURL.disabled = true;
+            lblAudioFile.hidden = true;
+            lblServerAudioFile.hidden = true;
+            clearButton.disabled = true;
+            console.log("▶️ Resumed audio");
+            }
+            // If no audio yet → initialize
+            else {
+            init();
+            }
+            }
 
             function init() {
 
+            resetScene();
+
+            isPause = 0;
+
+            startButton.textContent = "Play";
+
             const sourceAudio = document.getElementById('sourceAudio');
 
-            const overlay = document.getElementById('overlay');
-            overlay.hidden = true;
+            //stop:const overlay = document.getElementById('overlay');
+            //stop:overlay.hidden = true;
             const divURL = document.getElementById('divURL');
             divURL.style.display = 'none';
             audioURL.disabled = true;
             lblAudioFile.hidden = true;
+            lblServerAudioFile.hidden = true;
             clearButton.disabled = true;
 
             const listener = new THREE.AudioListener();
@@ -504,9 +615,17 @@
             var distanceValue = roomCubeDimension;
             var coneInnerAngle = 180;
             var coneOuterAngle = 360;
-            var coneOuterGain = 0.4;
-            var range = 0.4;
+            var coneOuterGain = 0.1;
+            var range = 0.1;
             const helper = new PositionalAudioHelper(positionalAudio, range);
+            // Update all materials to red
+            helper.traverse((child) => {
+            if (child.material)
+            for(let i=0 ; i < child.material.length ; i++) {
+            child.material[i].color.set(0xff0000);
+            child.material[i].opacity = 0.5;
+            }
+            });
 
             const loader = new THREE.AudioLoader();
             loader.load(sourceAudio.src, (buffer) => {
@@ -546,6 +665,27 @@
             positionalAudio.play();
             isSoundPlaying = true;
 
+            startButton.textContent = "Pause";
+
+            // When the sound ends, reset the button
+            positionalAudio.onEnded = function () {
+            isSoundPlaying = false;
+            overlay.hidden = false;
+            divURL.style.display = 'flex';
+            audioURL.style.display = 'inline';
+            audioURL.disabled = false;
+            lblAudioFile.hidden = false;
+            lblServerAudioFile.hidden = false;
+            clearButton.style.display = 'inline';
+            clearButton.disabled = false;
+            lblNote.innerText = '';
+            lblSoundClassification.innerText = '';
+            lastNote = '';
+            startButton.textContent = "Play";
+            isPause = 0;
+            console.log("Track ended, resetting button");
+            };
+
             // // Stop the animation loop when the sound finishes
             // positionalAudio.onEnded = function () {
             //     isSoundPlaying = false;
@@ -581,19 +721,23 @@
 
             scene.add(group);
 
-            var particleCount = 1000;
-            var particles = new THREE.Geometry();
+            /*var particleCount = 1000;
+            var particles = new THREE.BufferGeometry();
             var bufferSpace = 5; // Add buffer space between particles and room boundaries
+            const vertices = [];
 
             for (var p = 0; p < particleCount; p++) {
             var x = (Math.random() - 0.5) * (roomCubeDimension - bufferSpace * 2); // Spread particles uniformly within room width with buffer space
             var y = (Math.random() - 0.5) * (roomCubeDimension - bufferSpace * 2); // Spread particles uniformly within room height with buffer space
             var z = (Math.random() - 0.5) * (roomCubeDimension - bufferSpace * 2); // Spread particles uniformly within room depth with buffer space
 
-            var particle = new THREE.Vector3(x, y, z);
+            //var particle = new THREE.Vector3(x, y, z);
 
-            particles.vertices.push(particle);
+            vertices.push(x, y, z);
+
+            //particles.vertices.push(particle);
             }
+            particles.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
             var particleMaterial = new THREE.PointsMaterial({
             color: '#ff1919',
@@ -602,6 +746,7 @@
 
             particleSystem = new THREE.Points(particles, particleMaterial);
             scene.add(particleSystem);
+            */
 
             animate();
 
@@ -714,29 +859,40 @@
 
             updateRays(color, dataArrayAmp, noteName);
 
-            particleSystem.geometry.vertices.forEach((particle, i) => {
-            var frequencyIndex = Math.floor(i * (dataArrayAmp.length / particleSystem.geometry.vertices.length));
-            var frequencyValue = dataArrayAmp[frequencyIndex];
             var offset = roomCubeDimension / 2;
             var amp = 0.5;
+
+            /*
+            for(let i = 0; i < particleSystem.geometry.attributes.position.count; i++) {
+            var frequencyIndex = Math.floor(i * (dataArrayAmp.length / particleSystem.geometry.attributes.position.count));
+            var frequencyValue = dataArrayAmp[frequencyIndex];
             var dampingFactor = 1 - (frequencyValue / 255);
-            var x = particle.x + noise.noise3D(particle.x, particle.y, dampingFactor) * amp;
-            var y = particle.y + noise.noise3D(particle.y, particle.z, dampingFactor) * amp;
-            var z = particle.z + noise.noise3D(particle.z, particle.x, dampingFactor) * amp;
+            var xValue = particleSystem.geometry.getAttribute("position").getX(i);
+            var yValue = particleSystem.geometry.getAttribute("position").getY(i);
+            var zValue = particleSystem.geometry.getAttribute("position").getZ(i);
+            var x = xValue + noise.noise3D(xValue, yValue, dampingFactor) * amp;
+            var y = yValue + noise.noise3D(yValue, zValue, dampingFactor) * amp;
+            var z = zValue + noise.noise3D(zValue, xValue, dampingFactor) * amp;
 
             // Keep particles within the room dimensions
             x = THREE.MathUtils.clamp(x, -offset, offset);
             y = THREE.MathUtils.clamp(y, -offset, offset);
             z = THREE.MathUtils.clamp(z, -offset, offset);
 
-            particle.set(x, y, z);
-            });
-            particleSystem.geometry.verticesNeedUpdate = true;
+            particleSystem.geometry.attributes.position.setXYZ(i, x, y, z );
+            //particles.getAttribute("position").setX(i, x);
+            //particles.getAttribute("position").setY(i, y);
+            //particles.getAttribute("position").setY(i, z);
+            }
+
+            particleSystem.geometry.attributes.position.needsUpdate = true;
+
 
             // Update particle size based on amplitude
             var particleMaterial = particleSystem.material;
             var size = modulate(overallAvg, 0, 255, 0.1, 2);
             particleMaterial.size = size;
+            */
 
             if (!hasAudioData) {
             if (rays.length > 0) {
@@ -752,14 +908,17 @@
             renderer.render(scene, camera);
 
             if (isSoundPlaying) {
-            requestAnimationFrame(animate);
+            //requestAnimationFrame(animate);
+            renderer.setAnimationLoop(animate);
             } else {
-            particleSystem.visible = false;
+            //stop:particleSystem.visible = false;
+            startButton.textContent = "Play";
             overlay.hidden = false;
             divURL.style.display = 'flex';
             audioURL.style.display = 'inline';
             audioURL.disabled = false;
             lblAudioFile.hidden = false;
+            lblServerAudioFile.hidden = false;
             clearButton.style.display = 'inline';
             clearButton.disabled = false;
 
@@ -772,19 +931,33 @@
             }
 
             function makeRoughBall(mesh, bassFr, treFr) {
-            mesh.geometry.vertices.forEach(function (vertex, i) {
-            var offset = mesh.geometry.parameters.radius;
-            var amp = 7;
-            var time = window.performance.now();
+            const positionAttribute = mesh.geometry.getAttribute("position");
+            const positions = positionAttribute.array;
+            const vertex = new THREE.Vector3();
+            const offset = mesh.geometry.parameters.radius;
+            const amp = 7;
+            const rf = 0.00001;
+            const time = window.performance.now();
+
+            for (let i = 0; i < positionAttribute.count; i++) {
+            vertex.fromBufferAttribute(positionAttribute, i);
             vertex.normalize();
-            var rf = 0.00001;
-            var distance = (offset + bassFr) + noise.noise3D(vertex.x + time * rf * 7, vertex.y + time * rf * 8, vertex.z + time * rf * 9) * amp * treFr;
+
+            const distance = (offset + bassFr) +
+            noise.noise3D(
+            vertex.x + time * rf * 7,
+            vertex.y + time * rf * 8,
+            vertex.z + time * rf * 9
+            ) * amp * treFr;
+
             vertex.multiplyScalar(distance);
-            });
-            mesh.geometry.verticesNeedUpdate = true;
-            mesh.geometry.normalsNeedUpdate = true;
+            positions[i * 3] = vertex.x;
+            positions[i * 3 + 1] = vertex.y;
+            positions[i * 3 + 2] = vertex.z;
+            }
+
+            positionAttribute.needsUpdate = true;
             mesh.geometry.computeVertexNormals();
-            mesh.geometry.computeFaceNormals();
             }
 
             function fractionate(val, minVal, maxVal) {
@@ -941,14 +1114,51 @@
             }
             var endVector = clampPointToRoom(boomboxPosition.clone().add(direction.multiplyScalar((rayLength) * Math.sqrt(2))));
 
-            const geometry = new THREE.BufferGeometry().setFromPoints([
-            boomboxPosition,
-            endVector
-            ]);
+            //stop: const geometry = new THREE.BufferGeometry().setFromPoints([
+            //stop: boomboxPosition,
+            //stop: endVector
+            //stop: ]);
 
-            const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+            //stop: const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
-            const line = new THREE.Line(geometry, rayLineMaterial);
+            //stop: const line = new THREE.Line(geometry, rayLineMaterial);
+
+            const positions = [];
+            const colors = [];
+            const points = [boomboxPosition, endVector];
+
+            const spline = new THREE.CatmullRomCurve3( points );
+            const divisions = Math.round(12 * points.length );
+            const point = new THREE.Vector3();
+            const color = new THREE.Color();
+
+            for ( let i = 0, l = divisions; i < l; i ++ ) {
+
+            const t = i / l;
+
+            spline.getPoint( t, point );
+            positions.push( point.x, point.y, point.z );
+
+            color.setHSL( t, 1.0, 0.5, THREE.SRGBColorSpace );
+            colors.push( color.r, color.g, color.b );
+
+            }
+
+            const geometry = new LineGeometry();
+
+            geometry.setPositions( positions );
+            geometry.setColors( colors );
+
+            geometry.userData = geometry.userData || {};
+            geometry.userData.originalPositions = positions.slice(); // keep a copy for later
+
+            const rayLineMaterial = new LineMaterial({ color: 0xffffff, dashed: false, vertexColors: false });
+            rayLineMaterial.resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
+
+            const line = new Line2(geometry, rayLineMaterial);
+            line.computeLineDistances();
+            line.scale.set( 1, 1, 1 );
+
             line.visible = false;
             rays.push({ line, direction, wall }); // Store the direction
             scene.add(line);
@@ -968,14 +1178,51 @@
             //debugger;
             var endVector = boomboxPosition.clone().add(direction.multiplyScalar(roomCubeDimension / 2));
 
-            const geometry = new THREE.BufferGeometry().setFromPoints([
-            boomboxPosition,
-            endVector
-            ]);
+            //stop: const geometry = new THREE.BufferGeometry().setFromPoints([
+            //stop: boomboxPosition,
+            //stop: endVector
+            //stop: ]);
 
-            const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+            //stop: const rayLineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
-            const line = new THREE.Line(geometry, rayLineMaterial);
+            //stop: const line = new THREE.Line(geometry, rayLineMaterial);
+
+            const positions = [];
+            const colors = [];
+            const points = [boomboxPosition, endVector];
+
+            const spline = new THREE.CatmullRomCurve3( points );
+            const divisions = Math.round(12 * points.length );
+            const point = new THREE.Vector3();
+            const color = new THREE.Color();
+
+            for ( let i = 0, l = divisions; i < l; i ++ ) {
+
+            const t = i / l;
+
+            spline.getPoint( t, point );
+            positions.push( point.x, point.y, point.z );
+
+            color.setHSL( t, 1.0, 0.5, THREE.SRGBColorSpace );
+            colors.push( color.r, color.g, color.b );
+
+            }
+
+            const geometry = new LineGeometry();
+
+            geometry.setPositions( positions );
+            geometry.setColors( colors );
+
+            geometry.userData = geometry.userData || {};
+            geometry.userData.originalPositions = positions.slice(); // keep a copy for later
+
+            const rayLineMaterial = new LineMaterial({ color: 0xffffff, dashed: false, vertexColors: false });
+            rayLineMaterial.resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
+
+            const line = new Line2(geometry, rayLineMaterial);
+            line.computeLineDistances();
+            line.scale.set( 1, 1, 1 );
+
             line.visible = false;
             rays.push({ line, direction }); // Store the direction
             scene.add(line);
@@ -1059,26 +1306,85 @@
             }
 
             function reflectRay(ray, noteColor, amplitude) {
-            const positions = ray.line ? ray.line.geometry.attributes.position.array : ray.geometry.attributes.position.array;
+            const line2 = ray.line ? ray.line : ray;
+            if (!line2 || !line2.geometry) {
+            console.warn("reflectRay: no line2 provided");
+            return;
+            }
 
-            // Get start and end points of the incident ray
-            const startPoint = new THREE.Vector3(positions[0], positions[1], positions[2]);
-            const lastPoint = new THREE.Vector3(positions[3], positions[4], positions[5]);
+            const geometry = line2.geometry;
+            const posAttr = geometry.getAttribute('position');
+            if (!posAttr) {
+            console.warn("reflectRay: geometry has no position attribute");
+            return;
+            }
 
-            // Find the closest wall and get the normal
+            // Ensure world matrices are updated
+            line2.updateMatrixWorld(true);
+
+            // Debug info: helpful to print when endpoint seems wrong
+            const attrCount = posAttr.count;
+            const arrayLength = posAttr.array.length;
+            const itemSize = posAttr.itemSize || 3;
+            console.log("reflectRay: posAttr.count=", attrCount, "array.length=", arrayLength, "itemSize=", itemSize);
+
+            // Primary: read by vertex index (safe)
+            const startLocal = new THREE.Vector3().fromBufferAttribute(posAttr, 0);
+            const endLocalFromAttr = new THREE.Vector3().fromBufferAttribute(posAttr, Math.max(0, attrCount - 1));
+
+            // Fallback: if you stored original positions when creating the LineGeometry, use them.
+            let endLocal;
+            if (geometry.userData && Array.isArray(geometry.userData.originalPositions) && geometry.userData.originalPositions.length >= 3) {
+            const orig = geometry.userData.originalPositions;
+            // Take first and last triplets from originalPositions (they are in x,y,z,x,y,z,...)
+            const origCount = Math.floor(orig.length / 3);
+            const startLocalFromOrig = new THREE.Vector3(orig[0], orig[1], orig[2]);
+            const lastIdx = Math.max(0, orig.length - 3);
+            const endLocalFromOrig = new THREE.Vector3(orig[lastIdx], orig[lastIdx + 1], orig[lastIdx + 2]);
+
+            // Compare and choose: prefer originalPositions because it's the logical sampled points
+            // but if originalPositions isn't available, we still have endLocalFromAttr
+            console.log("reflectRay: originalPositions count:", origCount);
+            endLocal = endLocalFromOrig;
+            // Also replace startLocal with orig start to be consistent
+            startLocal.copy(startLocalFromOrig);
+            } else {
+            // No originalPositions stored — use attribute read
+            endLocal = endLocalFromAttr;
+            }
+
+            // Convert to world space
+            const startWorld = startLocal.clone().applyMatrix4(line2.matrixWorld);
+            const endWorld = endLocal.clone().applyMatrix4(line2.matrixWorld);
+
+            // Extra debug: show first/last floats from attribute and from original (if present)
+            console.log("reflectRay: startLocal(attr)=", new THREE.Vector3().fromBufferAttribute(posAttr, 0));
+            console.log("reflectRay: endLocal(attr)=", endLocalFromAttr);
+            if (geometry.userData && geometry.userData.originalPositions) {
+            const orig = geometry.userData.originalPositions;
+            console.log("reflectRay: first 6 orig floats:", orig.slice(0,6));
+            console.log("reflectRay: last 6 orig floats:", orig.slice(-6));
+            } else {
+            console.log("reflectRay: attribute array last 6 floats:", Array.from(posAttr.array.slice(-6)));
+            }
+
+            // Find the closest wall and get the normal (your existing logic)
             let closestWall = null;
             let closestDistance = Infinity;
             let wallNormal = new THREE.Vector3();
 
             walls.forEach((wall) => {
             const normal = new THREE.Vector3();
+            // getWorldDirection returns the object's -Z as direction; you used .negate() previously
             wall.getWorldDirection(normal).negate();
 
-            const plane = new THREE.Plane(normal, -normal.dot(wall.position));
+            // Build plane: using the wall world position (works if wall.position is in world or local with matrixWorld updated)
+            // Make sure wall.matrixWorld is up-to-date outside this function when walls move.
+            const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, wall.getWorldPosition(new THREE.Vector3()));
             const projectedPoint = new THREE.Vector3();
-            plane.projectPoint(lastPoint, projectedPoint);
+            plane.projectPoint(endWorld, projectedPoint);
 
-            const wallDistance = lastPoint.distanceTo(projectedPoint);
+            const wallDistance = endWorld.distanceTo(projectedPoint);
             if (wallDistance < closestDistance) {
             closestDistance = wallDistance;
             closestWall = wall;
@@ -1086,34 +1392,71 @@
             }
             });
 
-            // Calculate the direction vector of the ray
-            const rayDirection = new THREE.Vector3().subVectors(lastPoint, startPoint).normalize();
+            // If no wall found, bail
+            if (!closestWall) {
+            console.warn("reflectRay: no walls found to reflect against");
+            return;
+            }
 
-            // Calculate the reflection direction
+            // Reflection math
+            const rayDirection = new THREE.Vector3().subVectors(endWorld, startWorld).normalize();
             const reflectionDirection = new THREE.Vector3()
             .copy(rayDirection)
-            .sub(wallNormal.multiplyScalar(2 * rayDirection.dot(wallNormal)))
+            .sub(wallNormal.clone().multiplyScalar(2 * rayDirection.dot(wallNormal)))
             .normalize();
 
-            // Calculate the intersection point with the room boundaries
-            const intersectionPoint = calculateIntersectionWithRoom(lastPoint, reflectionDirection);
+            // Intersection with room boundaries: your existing helper
+            const intersectionPoint = calculateIntersectionWithRoom(endWorld, reflectionDirection);
+            if (!intersectionPoint) {
+            console.warn("reflectRay: intersection with room not found");
+            return;
+            }
 
             // Create the new reflected ray
-            const reflectedRayGeometry = new THREE.BufferGeometry().setFromPoints([lastPoint, intersectionPoint]);
+            const positions = [];
+            const colors = [];
+            const points = [endWorld, intersectionPoint];
 
-            const reflectedRayMaterial = new THREE.LineBasicMaterial({
-            color: !isShowFFOnly ? noteColor.clone() : new THREE.Color().setHex(noteColor),
+            const spline = new THREE.CatmullRomCurve3( points );
+            const divisions = Math.round(12 * points.length );
+            const point = new THREE.Vector3();
+            const color = new THREE.Color();
+
+            for ( let i = 0, l = divisions; i < l; i ++ ) {
+
+            const t = i / l;
+
+            spline.getPoint( t, point );
+            positions.push( point.x, point.y, point.z );
+
+            color.setHSL( t, 1.0, 0.5, THREE.SRGBColorSpace );
+            colors.push( color.r, color.g, color.b );
+
+            }
+
+            const reflectedRayGeometry = new LineGeometry();
+
+            reflectedRayGeometry.setPositions( positions );
+            reflectedRayGeometry.setColors( colors );
+
+            //const reflectedRayGeometry = new THREE.BufferGeometry().setFromPoints([endWorld, intersectionPoint]);
+
+            const reflectedRayMaterial = new LineMaterial({
+            color:!isShowFFOnly ? noteColor.clone() : new THREE.Color().setHex(noteColor),
             opacity: 0.6,
             transparent: true,
-            linewidth: calculateThickness(amplitude, 5)
-            });
+            linewidth: calculateThickness(amplitude, 5) });
 
-            const reflectedRay = new THREE.Line(reflectedRayGeometry, reflectedRayMaterial);
-            // Store the incident ray reference in the reflected ray object
+            const reflectedRay = new Line2(reflectedRayGeometry, reflectedRayMaterial);
+            reflectedRay.computeLineDistances();
+            reflectedRay.scale.set( 1, 1, 1 );
+
             reflectedRay.incidentRay = ray;
 
             rays.push(reflectedRay);
+            reflectedRay.visible = true;
             scene.add(reflectedRay);
+            console.log("Reflected:", startWorld, "->", intersectionPoint);
             }
 
             // Function to generate an array of random indices
@@ -1302,13 +1645,50 @@
             return sampleRate / T0;
             }
 
+            function resetScene() {
 
+            renderer.setAnimationLoop(null);
+
+            // Stop any playing sound
+            if (positionalAudio && positionalAudio.isPlaying) {
+            positionalAudio.stop();
+            }
+
+            // Remove all existing objects (except camera and renderer)
+            for (let i = scene.children.length - 1; i >= 0; i--) {
+            const obj = scene.children[i];
+            if (obj !== camera && obj !== renderer && obj.type !== "HemisphereLight" && obj != gridHelper) {
+            scene.remove(obj);
+            if (obj.geometry) obj.geometry.dispose?.();
+            if (obj.material) {
+            if (Array.isArray(obj.material)) {
+            obj.material.forEach(m => m.dispose?.());
+            } else obj.material.dispose?.();
+            }
+            }
+            }
+
+            // Reset global arrays and flags
+            rays = [];
+            isSoundPlaying = false;
+            lastNote = "";
+            dataArrayAmp = null;
+            analyser = null;
+            analyserAmp = null;
+
+            // Optionally reset UI labels
+            document.getElementById("lblNote").innerText = "";
+            document.getElementById("lblSoundClassification").innerText = "";
+
+            console.log("Scene reset complete");
+            }
         </script>
     </div>
     <!-- Footer -->
-    <!--<footer>
+    <!--<footer id="footer">
         Sara Daher et Martine Aoun.<br>
         © Sara Daher 2025 - Tous droits réservés.
     </footer>-->
 </body>
+
 </html>
