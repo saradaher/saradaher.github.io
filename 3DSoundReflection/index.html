@@ -16,8 +16,7 @@
         }
 
         body {
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden !important;
             background-color: darkgray;
         }
 
@@ -114,14 +113,12 @@
             position: relative;
             bottom: 0;
             left: 0;
-            width: 100%;
-            background: rgba(20, 20, 20, 0.8);
-            color: #f0f0f0;
             text-align: center;
-            padding: 8px 0;
             font-size: 14px;
             z-index: 10; /* make sure it stays above the WebGL canvas */
-            backdrop-filter: blur(6px); /* optional glassy look */
+            padding: 0.5rem;
+            color: rgba(20, 20, 20, 0.8);
+            width: 100%;
         }
     </style>
 
@@ -212,7 +209,7 @@
                 </div>
             </p>
         </div>
-
+        <main id="canvas">
         <script type="importmap">
             {
             "imports": {
@@ -256,6 +253,10 @@
             hideBallCheckbox.checked = !hideBallCheckbox.checked;
             hideBall();
             }
+                else {
+                if (event.code === 'Space') {
+                document.getElementById('startButton').click();
+                }}
             });
 
             const noise = new simplex.SimplexNoise();
@@ -323,14 +324,16 @@
 
             group = new THREE.Group();
 
+            var container = document.getElementById('canvas');
+
             var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setAnimationLoop(animationLoop);
             renderer.shadowMap.enabled = true;
             renderer.xr.enabled = true;
-            document.body.appendChild(renderer.domElement);
-            document.body.appendChild(VRButton.createButton(renderer));
+            container.appendChild(renderer.domElement);
+            container.appendChild(VRButton.createButton(renderer));
 
             window.addEventListener('resize', onWindowResize);
 
@@ -1696,12 +1699,14 @@
             console.log("Scene reset complete");
             }
         </script>
+
+        </main>
     </div>
     <!-- Footer -->
-    <!--<footer id="footer">
+    <footer id="footer">
         Sara Daher et Martine Aoun.<br>
         © Sara Daher 2025 - Tous droits réservés.
-    </footer>-->
+    </footer>
 </body>
 
 </html>
