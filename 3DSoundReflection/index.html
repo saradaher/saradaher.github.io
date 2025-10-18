@@ -253,10 +253,10 @@
             hideBallCheckbox.checked = !hideBallCheckbox.checked;
             hideBall();
             }
-                else {
-                if (event.code === 'Space') {
-                document.getElementById('startButton').click();
-                }}
+            else {
+            if (event.key === "p" || event.key === "P") {
+            document.getElementById('startButton').click();
+            }}
             });
 
             const noise = new simplex.SimplexNoise();
